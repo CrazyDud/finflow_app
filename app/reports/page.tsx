@@ -28,9 +28,11 @@ import {
 } from 'lucide-react';
 import { useFinance } from '@/hooks/use-finance';
 import { formatCurrency } from '@/lib/utils';
+import { useI18n } from '@/components/i18n/i18n-provider';
 
 export default function ReportsPage() {
   const { data, currencyRates } = useFinance();
+  const { t } = useI18n();
   const [selectedPeriod, setSelectedPeriod] = useState('current-month');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -186,7 +188,7 @@ Generated on: ${new Date().toLocaleDateString()}
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium">Loading reports...</h3>
+            <h3 className="text-lg font-medium">{t('reports.loading')}</h3>
           </div>
         </div>
       </MainLayout>
@@ -198,19 +200,17 @@ Generated on: ${new Date().toLocaleDateString()}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
-            <p className="text-muted-foreground">
-              Detailed financial reports and analysis
-            </p>
+            <h1 className="text-3xl font-bold tracking-tight">{t('reports.title')}</h1>
+            <p className="text-muted-foreground">{t('reports.subtitle')}</p>
           </div>
           <div className="flex items-center space-x-2">
             <Badge variant="secondary" className="px-3 py-1">
               <Zap className="h-3 w-3 mr-1" />
-              Pro Feature
+              {t('common.proFeature')}
             </Badge>
             <Button onClick={generatePDFReport}>
               <Download className="h-4 w-4 mr-2" />
-              Export Report
+              {t('reports.export')}
             </Button>
           </div>
         </div>
@@ -220,33 +220,33 @@ Generated on: ${new Date().toLocaleDateString()}
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Filter className="h-5 w-5" />
-              <span>Report Filters</span>
+              <span>{t('reports.filters')}</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
-                <label className="text-sm font-medium mb-2 block">Time Period</label>
+                <label className="text-sm font-medium mb-2 block">{t('reports.timePeriod')}</label>
                 <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="current-month">Current Month</SelectItem>
-                    <SelectItem value="last-month">Last Month</SelectItem>
-                    <SelectItem value="last-3-months">Last 3 Months</SelectItem>
-                    <SelectItem value="current-year">Current Year</SelectItem>
+                    <SelectItem value="current-month">{t('reports.currentMonth')}</SelectItem>
+                    <SelectItem value="last-month">{t('reports.lastMonth')}</SelectItem>
+                    <SelectItem value="last-3-months">{t('reports.last3Months')}</SelectItem>
+                    <SelectItem value="current-year">{t('reports.currentYear')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="flex-1">
-                <label className="text-sm font-medium mb-2 block">Category</label>
+                <label className="text-sm font-medium mb-2 block">{t('reports.category')}</label>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="all">{t('trans.filter.all')}</SelectItem>
                     {data.categories.map(cat => (
                       <SelectItem key={cat.id} value={cat.name}>
                         {cat.name}
@@ -265,7 +265,7 @@ Generated on: ${new Date().toLocaleDateString()}
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <TrendingUp className="h-4 w-4 text-green-600" />
-                <div className="text-sm font-medium text-muted-foreground">Income</div>
+                <div className="text-sm font-medium text-muted-foreground">{t('analytics.income')}</div>
               </div>
               <div className="text-2xl font-bold text-green-600">
                 {formatCurrency(reportData.totalIncome, data.settings.defaultCurrency, currencyRates)}
@@ -277,7 +277,7 @@ Generated on: ${new Date().toLocaleDateString()}
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <TrendingDown className="h-4 w-4 text-red-600" />
-                <div className="text-sm font-medium text-muted-foreground">Expenses</div>
+                <div className="text-sm font-medium text-muted-foreground">{t('analytics.expenses')}</div>
               </div>
               <div className="text-2xl font-bold text-red-600">
                 {formatCurrency(reportData.totalExpenses, data.settings.defaultCurrency, currencyRates)}
@@ -289,7 +289,7 @@ Generated on: ${new Date().toLocaleDateString()}
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <Target className="h-4 w-4 text-blue-600" />
-                <div className="text-sm font-medium text-muted-foreground">Net Savings</div>
+                <div className="text-sm font-medium text-muted-foreground">{t('reports.netSavings')}</div>
               </div>
               <div className={`text-2xl font-bold ${
                 reportData.netSavings >= 0 ? 'text-green-600' : 'text-red-600'
@@ -303,13 +303,13 @@ Generated on: ${new Date().toLocaleDateString()}
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <BarChart3 className="h-4 w-4 text-violet-600" />
-                <div className="text-sm font-medium text-muted-foreground">Transactions</div>
+                <div className="text-sm font-medium text-muted-foreground">{t('reports.transactions')}</div>
               </div>
               <div className="text-2xl font-bold text-violet-600">
                 {reportData.transactionCount}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Avg: {formatCurrency(reportData.averageTransaction, data.settings.defaultCurrency, currencyRates)}
+                {t('reports.avg')} {formatCurrency(reportData.averageTransaction, data.settings.defaultCurrency, currencyRates)}
               </p>
             </CardContent>
           </Card>
@@ -319,16 +319,16 @@ Generated on: ${new Date().toLocaleDateString()}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Category Breakdown */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <PieChart className="h-5 w-5" />
-                <span>Category Breakdown</span>
-              </CardTitle>
-            </CardHeader>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <PieChart className="h-5 w-5" />
+                    <span>{t('reports.breakdown')}</span>
+                  </CardTitle>
+                </CardHeader>
             <CardContent>
               {reportData.categoryBreakdown.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  No expenses in selected period
+                  {t('reports.noExpenses')}
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -357,12 +357,12 @@ Generated on: ${new Date().toLocaleDateString()}
           {/* Budget Analysis (Current Month Only) */}
           {selectedPeriod === 'current-month' && reportData.budgetComparison.length > 0 && (
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Target className="h-5 w-5" />
-                  <span>Budget Analysis</span>
-                </CardTitle>
-              </CardHeader>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Target className="h-5 w-5" />
+                    <span>{t('reports.budgetAnalysis')}</span>
+                  </CardTitle>
+                </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {reportData.budgetComparison.map((item) => (
@@ -387,8 +387,8 @@ Generated on: ${new Date().toLocaleDateString()}
                       </div>
                       <div className="text-xs text-muted-foreground">
                         {item.remaining >= 0 ? 
-                          `${formatCurrency(item.remaining, data.settings.defaultCurrency, currencyRates)} remaining` :
-                          `${formatCurrency(Math.abs(item.remaining), data.settings.defaultCurrency, currencyRates)} over budget`
+                          `${formatCurrency(item.remaining, data.settings.defaultCurrency, currencyRates)} ${t('reports.remaining')}` :
+                          `${formatCurrency(Math.abs(item.remaining), data.settings.defaultCurrency, currencyRates)} ${t('reports.overBudget')}`
                         }
                       </div>
                     </div>
@@ -404,23 +404,23 @@ Generated on: ${new Date().toLocaleDateString()}
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Calendar className="h-5 w-5" />
-              <span>Period Summary</span>
+              <span>{t('reports.periodSummary')}</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div>
-                <span className="text-muted-foreground">Period:</span>
+                <span className="text-muted-foreground">{t('reports.period')}</span>
                 <div className="font-medium">
                   {new Date(reportData.startDate).toLocaleDateString()} - {new Date(reportData.endDate).toLocaleDateString()}
                 </div>
               </div>
               <div>
-                <span className="text-muted-foreground">Total Transactions:</span>
+                <span className="text-muted-foreground">{t('reports.totalTransactions')}</span>
                 <div className="font-medium">{reportData.transactionCount}</div>
               </div>
               <div>
-                <span className="text-muted-foreground">Savings Rate:</span>
+                <span className="text-muted-foreground">{t('reports.savingsRate')}</span>
                 <div className="font-medium">
                   {reportData.totalIncome > 0 ? 
                     `${((reportData.netSavings / reportData.totalIncome) * 100).toFixed(1)}%` : 

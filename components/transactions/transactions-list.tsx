@@ -16,6 +16,7 @@ import { formatCurrency, formatDate } from '@/lib/utils';
 import { Income, Expense } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { useI18n } from '@/components/i18n/i18n-provider';
 
 type Transaction = (Income | Expense) & {
   type: 'income' | 'expense';
@@ -28,12 +29,13 @@ export function TransactionsList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('all');
   const [transactionToEdit, setTransactionToEdit] = useState<Transaction | null>(null);
+  const { t } = useI18n();
 
   if (!data) {
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="text-center">Loading transactions...</div>
+          <div className="text-center">{t('trans.loading')}</div>
         </CardContent>
       </Card>
     );
@@ -74,13 +76,13 @@ export function TransactionsList() {
       }
       
       toast({
-        title: 'Transaction deleted',
+        title: t('notifications.transactionDeleted') || 'Transaction deleted',
         description: `${transaction.type === 'income' ? 'Income' : 'Expense'} of ${formatCurrency(transaction.amount, transaction.currency, currencyRates)} was removed`,
       });
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to delete transaction',
+        title: t('common.error') || 'Error',
+        description: t('errors.failedToDelete') || 'Failed to delete transaction',
         variant: 'destructive',
       });
     }
@@ -93,7 +95,7 @@ export function TransactionsList() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Filter className="h-5 w-5" />
-            <span>Filters</span>
+            <span>{t('trans.filters')}</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -102,7 +104,7 @@ export function TransactionsList() {
               <div className="relative">
                 <Search className="h-4 w-4 absolute left-3 top-3 text-muted-foreground" />
                 <Input
-                  placeholder="Search transactions..."
+                  placeholder={t('trans.search.placeholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -112,12 +114,12 @@ export function TransactionsList() {
             
             <Select value={selectedType} onValueChange={setSelectedType}>
               <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="All Types" />
+                <SelectValue placeholder={t('trans.filter.all')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="income">Income Only</SelectItem>
-                <SelectItem value="expense">Expenses Only</SelectItem>
+                <SelectItem value="all">{t('trans.filter.all')}</SelectItem>
+                <SelectItem value="income">{t('trans.filter.income')}</SelectItem>
+                <SelectItem value="expense">{t('trans.filter.expense')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -130,12 +132,12 @@ export function TransactionsList() {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center space-x-2">
               <Receipt className="h-5 w-5" />
-              <span>All Transactions ({filteredTransactions.length})</span>
+              <span>{t('trans.header')} ({filteredTransactions.length})</span>
             </CardTitle>
             <Link href="/add">
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                Add Transaction
+                {t('trans.add')}
               </Button>
             </Link>
           </div>
@@ -209,9 +211,9 @@ export function TransactionsList() {
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
+                               <AlertDialogTitle>{t('trans.delete.title')}</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete this {transaction.type}? This action cannot be undone.
+                                 {t('trans.delete.confirm')} {transaction.type}? {t('trans.delete.undo')}
                                 <br /><br />
                                 <strong>Amount:</strong> {formatCurrency(transaction.amount, transaction.currency, currencyRates)}
                                 <br />
@@ -219,12 +221,12 @@ export function TransactionsList() {
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                               <AlertDialogCancel>{t('trans.cancel')}</AlertDialogCancel>
                               <AlertDialogAction 
                                 onClick={() => handleDeleteTransaction(transaction)}
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               >
-                                Delete
+                                 {t('trans.delete')}
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
@@ -239,12 +241,12 @@ export function TransactionsList() {
             <div className="text-center py-8">
               <Receipt className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
               <p className="text-muted-foreground mb-4">
-                {searchTerm || selectedType !== 'all' ? 'No transactions match your filters' : 'No transactions recorded yet'}
+                {searchTerm || selectedType !== 'all' ? t('trans.empty.filtered') : t('trans.empty')}
               </p>
               <Link href="/add">
                 <Button>
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Your First Transaction
+                  {t('trans.addFirst')}
                 </Button>
               </Link>
             </div>

@@ -34,6 +34,7 @@ import {
   Filler
 } from 'chart.js';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
+import { useI18n } from '@/components/i18n/i18n-provider';
 
 ChartJS.register(
   CategoryScale,
@@ -50,6 +51,7 @@ ChartJS.register(
 
 export default function AnalyticsPage() {
   const { data, currencyRates } = useFinance();
+  const { t } = useI18n();
   const { startIfFirstVisit } = useOnboarding();
   useEffect(() => {
     const steps: OnboardingStep[] = [
@@ -131,8 +133,8 @@ export default function AnalyticsPage() {
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <Activity className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium">No data available</h3>
-            <p className="text-muted-foreground">Add some transactions to see analytics</p>
+            <h3 className="text-lg font-medium">{t('analytics.empty.title')}</h3>
+            <p className="text-muted-foreground">{t('analytics.empty.desc')}</p>
           </div>
         </div>
       </MainLayout>
@@ -206,14 +208,12 @@ export default function AnalyticsPage() {
       <div className="space-y-6" data-tour="analytics.main">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
-            <p className="text-muted-foreground">
-              Deep insights into your spending patterns and trends
-            </p>
+            <h1 className="text-3xl font-bold tracking-tight">{t('analytics.title')}</h1>
+            <p className="text-muted-foreground">{t('analytics.subtitle')}</p>
           </div>
           <Badge variant="secondary" className="px-3 py-1">
             <Zap className="h-3 w-3 mr-1" />
-            Pro Feature
+            {t('common.proFeature')}
           </Badge>
         </div>
 
@@ -223,12 +223,12 @@ export default function AnalyticsPage() {
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <TrendingUp className="h-4 w-4 text-green-600" />
-                <div className="text-sm font-medium text-muted-foreground">This Month</div>
+                <div className="text-sm font-medium text-muted-foreground">{t('analytics.thisMonth')}</div>
               </div>
               <div className="text-2xl font-bold text-green-600">
                 {formatCurrency(analytics.currentIncome, data.settings.defaultCurrency, currencyRates)}
               </div>
-              <p className="text-xs text-muted-foreground">Income</p>
+              <p className="text-xs text-muted-foreground">{t('analytics.income')}</p>
             </CardContent>
           </Card>
 
@@ -236,12 +236,12 @@ export default function AnalyticsPage() {
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <TrendingDown className="h-4 w-4 text-red-600" />
-                <div className="text-sm font-medium text-muted-foreground">This Month</div>
+                <div className="text-sm font-medium text-muted-foreground">{t('analytics.thisMonth')}</div>
               </div>
               <div className="text-2xl font-bold text-red-600">
                 {formatCurrency(analytics.currentExpenses, data.settings.defaultCurrency, currencyRates)}
               </div>
-              <p className="text-xs text-muted-foreground">Expenses</p>
+              <p className="text-xs text-muted-foreground">{t('analytics.expenses')}</p>
             </CardContent>
           </Card>
 
@@ -249,14 +249,14 @@ export default function AnalyticsPage() {
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <Target className="h-4 w-4 text-blue-600" />
-                <div className="text-sm font-medium text-muted-foreground">Net</div>
+                <div className="text-sm font-medium text-muted-foreground">{t('analytics.net')}</div>
               </div>
               <div className={`text-2xl font-bold ${
                 analytics.currentIncome - analytics.currentExpenses >= 0 ? 'text-green-600' : 'text-red-600'
               }`}>
                 {formatCurrency(analytics.currentIncome - analytics.currentExpenses, data.settings.defaultCurrency, currencyRates)}
               </div>
-              <p className="text-xs text-muted-foreground">Savings</p>
+              <p className="text-xs text-muted-foreground">{t('analytics.savings')}</p>
             </CardContent>
           </Card>
 
@@ -264,12 +264,12 @@ export default function AnalyticsPage() {
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4 text-violet-600" />
-                <div className="text-sm font-medium text-muted-foreground">Daily Avg</div>
+                <div className="text-sm font-medium text-muted-foreground">{t('analytics.dailyAvg')}</div>
               </div>
               <div className="text-2xl font-bold text-violet-600">
                 {formatCurrency(analytics.averageDaily, data.settings.defaultCurrency, currencyRates)}
               </div>
-              <p className="text-xs text-muted-foreground">Spending</p>
+              <p className="text-xs text-muted-foreground">{t('analytics.spending')}</p>
             </CardContent>
           </Card>
         </div>
@@ -279,22 +279,22 @@ export default function AnalyticsPage() {
           <TabsList>
             <TabsTrigger value="trends" className="flex items-center space-x-2">
               <BarChart3 className="h-4 w-4" />
-              <span>Trends</span>
+              <span>{t('analytics.tab.trends')}</span>
             </TabsTrigger>
             <TabsTrigger value="categories" className="flex items-center space-x-2">
               <PieChart className="h-4 w-4" />
-              <span>Categories</span>
+              <span>{t('analytics.tab.categories')}</span>
             </TabsTrigger>
             <TabsTrigger value="patterns" className="flex items-center space-x-2">
               <Activity className="h-4 w-4" />
-              <span>Patterns</span>
+              <span>{t('analytics.tab.patterns')}</span>
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="trends" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Income vs Expenses Trend</CardTitle>
+                <CardTitle>{t('analytics.trendTitle')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-80">
@@ -308,7 +308,7 @@ export default function AnalyticsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Top Spending Categories</CardTitle>
+                  <CardTitle>{t('analytics.topCategories')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="h-64">
@@ -327,7 +327,7 @@ export default function AnalyticsPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Category Breakdown</CardTitle>
+                  <CardTitle>{t('analytics.categoryBreakdown')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -353,7 +353,7 @@ export default function AnalyticsPage() {
           <TabsContent value="patterns" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Weekly Spending Pattern</CardTitle>
+                <CardTitle>{t('analytics.weeklyPattern')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-80">

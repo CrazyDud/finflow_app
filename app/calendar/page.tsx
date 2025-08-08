@@ -28,9 +28,11 @@ import { MoneySymbol } from '@/components/ui/money-symbol';
 import { useFinance } from '@/hooks/use-finance';
 import { formatCurrency } from '@/lib/utils';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, startOfWeek, endOfWeek } from 'date-fns';
+import { useI18n } from '@/components/i18n/i18n-provider';
 
 export default function CalendarPage() {
   const { data, currencyRates } = useFinance();
+  const { t } = useI18n();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showTransactionDialog, setShowTransactionDialog] = useState(false);
@@ -119,7 +121,7 @@ export default function CalendarPage() {
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <CalendarIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium">Loading calendar...</h3>
+            <h3 className="text-lg font-medium">{t('calendar.loading')}</h3>
           </div>
         </div>
       </MainLayout>
@@ -131,14 +133,12 @@ export default function CalendarPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Financial Calendar</h1>
-            <p className="text-muted-foreground">
-              Track your daily financial activities at a glance
-            </p>
+            <h1 className="text-3xl font-bold tracking-tight">{t('calendar.title')}</h1>
+            <p className="text-muted-foreground">{t('calendar.subtitle')}</p>
           </div>
           <Badge variant="secondary" className="px-3 py-1">
             <Zap className="h-3 w-3 mr-1" />
-            Pro Feature
+            {t('common.proFeature')}
           </Badge>
         </div>
 
@@ -159,7 +159,7 @@ export default function CalendarPage() {
                   size="sm" 
                   onClick={() => setCurrentDate(new Date())}
                 >
-                  Today
+                  {t('calendar.today')}
                 </Button>
                 <Button variant="outline" size="sm" onClick={handleNextMonth}>
                   <ChevronRight className="h-4 w-4" />
@@ -314,15 +314,13 @@ export default function CalendarPage() {
             {selectedDateTransactions && (
               <div className="space-y-4">
                 {selectedDateTransactions.income.length === 0 && selectedDateTransactions.expenses.length === 0 ? (
-                  <div className="text-center py-8">
+                    <div className="text-center py-8">
                     <CalendarIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No transactions</h3>
-                    <p className="text-muted-foreground mb-4">
-                      No financial activity recorded for this date
-                    </p>
+                      <h3 className="text-lg font-medium mb-2">{t('calendar.noTransactions')}</h3>
+                      <p className="text-muted-foreground mb-4">{t('calendar.noActivity')}</p>
                     <Button onClick={() => setShowTransactionDialog(true)}>
                       <Plus className="h-4 w-4 mr-2" />
-                      Add Transaction
+                        {t('calendar.addTransaction')}
                     </Button>
                   </div>
                 ) : (
@@ -377,17 +375,17 @@ export default function CalendarPage() {
                       <div className="flex justify-center mb-4">
                         <Button onClick={() => setShowTransactionDialog(true)} variant="outline">
                           <Plus className="h-4 w-4 mr-2" />
-                          Add Transaction for This Date
+                          {t('calendar.addForDate')}
                         </Button>
                       </div>
                     </div>
 
                     {/* Daily Summary */}
                     <div className="border-t pt-4">
-                      <h4 className="font-medium mb-3">Daily Summary</h4>
+                      <h4 className="font-medium mb-3">{t('calendar.dailySummary')}</h4>
                       <div className="grid grid-cols-3 gap-4 text-center">
                         <div>
-                          <div className="text-sm text-muted-foreground">Income</div>
+                          <div className="text-sm text-muted-foreground">{t('analytics.income')}</div>
                           <div className="text-lg font-semibold text-green-600">
                             +{formatCurrency(
                               selectedDateTransactions.income.reduce((sum, inc) => sum + inc.amount, 0),
@@ -397,7 +395,7 @@ export default function CalendarPage() {
                           </div>
                         </div>
                         <div>
-                          <div className="text-sm text-muted-foreground">Expenses</div>
+                          <div className="text-sm text-muted-foreground">{t('analytics.expenses')}</div>
                           <div className="text-lg font-semibold text-red-600">
                             -{formatCurrency(
                               selectedDateTransactions.expenses.reduce((sum, exp) => sum + exp.amount, 0),
@@ -407,7 +405,7 @@ export default function CalendarPage() {
                           </div>
                         </div>
                         <div>
-                          <div className="text-sm text-muted-foreground">Net</div>
+                          <div className="text-sm text-muted-foreground">{t('analytics.net')}</div>
                           <div className="text-lg font-semibold text-blue-600">
                             {formatCurrency(
                               selectedDateTransactions.income.reduce((sum, inc) => sum + inc.amount, 0) -

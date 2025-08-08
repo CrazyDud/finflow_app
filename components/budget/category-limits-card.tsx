@@ -11,11 +11,13 @@ import { Progress } from '@/components/ui/progress';
 import { PieChart, Edit3, Save, X, AlertTriangle, CheckCircle, RefreshCcw } from 'lucide-react';
 import { useFinance } from '@/hooks/use-finance';
 import { useToast } from '@/hooks/use-toast';
+import { useI18n } from '@/components/i18n/i18n-provider';
 import { formatCurrency, calculateCategorySpending, calculateBudgetUtilization, filterByDateRange } from '@/lib/utils';
 
 export function CategoryLimitsCard() {
   const { data, currencyRates, updateCategory, recalcCategoryLimits } = useFinance();
   const { toast } = useToast();
+  const { t } = useI18n();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
 
@@ -41,8 +43,8 @@ export function CategoryLimitsCard() {
     const newLimit = parseFloat(editValue);
     if (isNaN(newLimit) || newLimit < 0) {
       toast({
-        title: 'Invalid limit',
-        description: 'Please enter a valid positive number',
+        title: t('errors.invalidAmount'),
+        description: t('errors.enterValidAmount'),
         variant: 'destructive',
       });
       return;
@@ -51,8 +53,8 @@ export function CategoryLimitsCard() {
     updateCategory(categoryId, { limit: newLimit });
     
     toast({
-      title: 'Limit updated',
-      description: 'Category spending limit has been updated',
+      title: t('cat.updated'),
+      description: t('cat.updated'),
     });
 
     setEditingId(null);
@@ -71,9 +73,9 @@ export function CategoryLimitsCard() {
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <PieChart className="h-5 w-5" />
-          <span>Category Limits</span>
+          <span>{t('limits.title')}</span>
           <Button size="sm" variant="outline" className="ml-auto" onClick={recalcLimits}>
-            <RefreshCcw className="h-3 w-3 mr-1" /> Recalculate
+            <RefreshCcw className="h-3 w-3 mr-1" /> {t('limits.recalculate')}
           </Button>
         </CardTitle>
       </CardHeader>
@@ -124,14 +126,14 @@ export function CategoryLimitsCard() {
                   {/* Spending vs Limit */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Spent</span>
+                      <span className="text-muted-foreground">{t('limits.spent')}</span>
                       <span className="font-medium">
                         {formatCurrency(spent, data.settings.defaultCurrency, currencyRates)}
                       </span>
                     </div>
                     
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Limit</span>
+                      <span className="text-muted-foreground">{t('limits.limit')}</span>
                       {isEditing ? (
                         <div className="flex items-center space-x-2">
                           <Input
@@ -171,18 +173,18 @@ export function CategoryLimitsCard() {
                         }
                         className="text-xs"
                       >
-                        {utilization.toFixed(0)}% used
+                        {utilization.toFixed(0)}% {t('limits.used')}
                       </Badge>
                       
                       {isOverBudget && (
                         <span className="text-xs text-red-600">
-                          {formatCurrency(spent - limit, data.settings.defaultCurrency, currencyRates)} over
+                          {formatCurrency(spent - limit, data.settings.defaultCurrency, currencyRates)} {t('limits.over')}
                         </span>
                       )}
                       
                       {!isOverBudget && limit > spent && (
                         <span className="text-xs text-green-600">
-                          {formatCurrency(limit - spent, data.settings.defaultCurrency, currencyRates)} left
+                          {formatCurrency(limit - spent, data.settings.defaultCurrency, currencyRates)} {t('limits.left')}
                         </span>
                       )}
                     </div>

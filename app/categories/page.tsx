@@ -53,6 +53,7 @@ import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { useOnboarding, type OnboardingStep } from '@/components/shared/onboarding/OnboardingProvider';
+import { useI18n } from '@/components/i18n/i18n-provider';
 
 // Enhanced category presets with realistic limits based on real-world data
 const CATEGORY_PRESETS = {
@@ -146,6 +147,7 @@ const CATEGORY_PRESETS = {
 
 export default function CategoriesPage() {
   const { startIfFirstVisit } = useOnboarding();
+  const { t } = useI18n();
   useEffect(() => {
     const steps: OnboardingStep[] = [
       { id: 'presets', target: '[data-tour="categories.presets"]', title: 'Smart Presets', body: 'Add realistic categories quickly.' },
@@ -490,10 +492,8 @@ export default function CategoriesPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Smart Categories</h1>
-            <p className="text-muted-foreground">
-              Organize your spending with intelligent categories and realistic budgets
-            </p>
+            <h1 className="text-3xl font-bold tracking-tight">{t('cat.title')}</h1>
+            <p className="text-muted-foreground">{t('cat.subtitle')}</p>
           </div>
           <Badge variant="secondary" className="px-3 py-1">
             <Sparkles className="h-3 w-3 mr-1" />
@@ -505,15 +505,15 @@ export default function CategoriesPage() {
           <TabsList>
             <TabsTrigger value="presets" className="flex items-center space-x-2">
               <Tag className="h-4 w-4" />
-              <span>Smart Presets</span>
+              <span>{t('cat.tab.presets')}</span>
             </TabsTrigger>
             <TabsTrigger value="custom" className="flex items-center space-x-2">
               <Wand2 className="h-4 w-4" />
-              <span>Custom Categories</span>
+              <span>{t('cat.tab.custom')}</span>
             </TabsTrigger>
             <TabsTrigger value="manage" className="flex items-center space-x-2">
               <Settings2 className="h-4 w-4" />
-              <span>Manage Categories</span>
+              <span>{t('cat.tab.manage')}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -523,17 +523,15 @@ export default function CategoriesPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2 text-xl">
                   <Sparkles className="h-5 w-5 text-blue-600" />
-                  <span>Quick Setup with Smart Presets</span>
+                  <span>{t('cat.quickSetup')}</span>
                 </CardTitle>
-                <p className="text-muted-foreground">
-                  Select a category group and choose specific subcategories to add with realistic limits
-                </p>
+                <p className="text-muted-foreground">{t('cat.quickSetup.desc')}</p>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center space-x-4 mb-6">
                   <Select value={selectedPreset} onValueChange={setSelectedPreset}>
                     <SelectTrigger className="w-80">
-                      <SelectValue placeholder="Choose a preset category group" />
+                      <SelectValue placeholder={t('cat.choosePreset')} />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.entries(CATEGORY_PRESETS).map(([name, preset]) => (
@@ -574,7 +572,7 @@ export default function CategoriesPage() {
                           onClick={() => setSelectedSubcategories([])}
                           className="border-red-300 text-red-700 hover:bg-red-50 dark:border-red-600 dark:text-red-300 dark:hover:bg-red-900/20"
                         >
-                          Clear All
+                          {t('cat.clearAll')}
                         </Button>
                         <Button 
                           size="sm" 
@@ -588,14 +586,14 @@ export default function CategoriesPage() {
                           }}
                           className="border-green-300 text-green-700 hover:bg-green-50 dark:border-green-600 dark:text-green-300 dark:hover:bg-green-900/20"
                         >
-                          Select All New
+                          {t('cat.selectAllNew')}
                         </Button>
                       </div>
                     </div>
 
                     <p className="text-sm text-muted-foreground mb-3 flex items-center">
                       <MousePointer2 className="h-3 w-3 mr-1" />
-                      Click categories to select/deselect them for adding
+                      {t('cat.clickToSelect')}
                     </p>
                     
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
@@ -627,8 +625,8 @@ export default function CategoriesPage() {
                               )}
                               <span className="font-medium">{sub.name}</span>
                             </div>
-                            <span className="text-xs">
-                              {exists ? '✓ Exists' : `~${formatCurrency(sub.avgLimit, data.settings.defaultCurrency, [])}`}
+                             <span className="text-xs">
+                              {exists ? t('cat.exists') : `~${formatCurrency(sub.avgLimit, data.settings.defaultCurrency, [])}`}
                             </span>
                           </motion.div>
                         );
@@ -639,7 +637,7 @@ export default function CategoriesPage() {
                       <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                         <p className="text-sm text-blue-800 dark:text-blue-200">
                           <CheckCircle className="h-4 w-4 inline mr-1" />
-                          {selectedSubcategories.length} categories selected for adding
+                          {selectedSubcategories.length} {t('cat.more')}
                         </p>
                       </div>
                     )}
@@ -664,7 +662,7 @@ export default function CategoriesPage() {
                           <preset.icon className="h-6 w-6" />
                         </div>
                         <div>
-                          <h4 className="font-semibold">{name}</h4>
+                           <h4 className="font-semibold">{name}</h4>
                           <Badge variant="outline" className="text-xs mt-1">
                             {preset.allocation}
                           </Badge>
@@ -681,7 +679,7 @@ export default function CategoriesPage() {
                         ))}
                         {preset.subcategories.length > 4 && (
                           <p className="text-xs text-muted-foreground">
-                            +{preset.subcategories.length - 4} more categories...
+                            +{preset.subcategories.length - 4} {t('cat.more')}
                           </p>
                         )}
                       </div>
@@ -707,10 +705,10 @@ export default function CategoriesPage() {
               <CardContent className="space-y-6">
                 {/* Step 1: Select Main Category */}
                 <div>
-                  <Label>Step 1: Select Main Category</Label>
+                  <Label>{t('cat.step1')}</Label>
                   <Select value={mainCategory} onValueChange={setMainCategory}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Choose main category type" />
+                      <SelectValue placeholder={t('cat.chooseMain')} />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.entries(CATEGORY_PRESETS).map(([name, preset]) => (
@@ -735,21 +733,21 @@ export default function CategoriesPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="space-y-4 p-4 border rounded-lg bg-muted/20"
                   >
-                    <Label>Step 2: Add Subcategory (Optional - defaults to "Other" if not specified)</Label>
+                    <Label>{t('cat.step2')}</Label>
                     <div className="flex gap-3">
                       <Input
-                        placeholder="Subcategory name (e.g., Coffee & Drinks)"
+                        placeholder={t('cat.subName.placeholder')}
                         value={subcategoryName}
                         onChange={(e) => setSubcategoryName(e.target.value)}
                         className="flex-1"
                       />
                       <Button onClick={handleAddCustomSubcategory} disabled={!mainCategory}>
                         <Plus className="h-4 w-4 mr-2" />
-                        Add Subcategory
+                        {t('cat.addSubcategory')}
                       </Button>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Limit will be automatically calculated based on your {CATEGORY_PRESETS[mainCategory as keyof typeof CATEGORY_PRESETS]?.allocation} allocation percentage
+                      {t('cat.limitAuto').replace('{allocation}', CATEGORY_PRESETS[mainCategory as keyof typeof CATEGORY_PRESETS]?.allocation || '')}
                     </p>
                   </motion.div>
                 )}
@@ -763,13 +761,13 @@ export default function CategoriesPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Plus className="h-5 w-5" />
-                  <span>Add Manual Category</span>
+                  <span>{t('cat.addManual')}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-                    <Label htmlFor="category-name">Category Name</Label>
+                    <Label htmlFor="category-name">{t('cat.categoryName')}</Label>
                     <Input
                       id="category-name"
                       placeholder="e.g., Coffee & Drinks"
@@ -778,7 +776,7 @@ export default function CategoriesPage() {
                     />
                   </div>
             <div className="sm:w-44">
-              <Label>Allocation</Label>
+              <Label>{t('cat.allocation')}</Label>
               <Select value={newCategory.allocation} onValueChange={(value) => setNewCategory(prev => ({...prev, allocation: value}))}>
                 <SelectTrigger>
                   <SelectValue />
@@ -791,7 +789,7 @@ export default function CategoriesPage() {
               </Select>
             </div>
                   <div className="sm:w-32">
-                    <Label htmlFor="category-limit">Monthly Limit</Label>
+                    <Label htmlFor="category-limit">{t('cat.monthlyLimit')}</Label>
                     <Input
                       id="category-limit"
                       type="number"
@@ -808,7 +806,7 @@ export default function CategoriesPage() {
                         }, 0);
                         const suggested = monthlyIncome > 0 ? 
                           Math.round((monthlyIncome * data.settings.budgetAllocation.fun / 100) * 0.05) : 100;
-                        return `${suggested} (suggested)`;
+                        return `${suggested} (${t('cat.suggested')})`;
                       })()}
                       value={newCategory.limit}
                       onChange={(e) => setNewCategory(prev => ({ ...prev, limit: e.target.value }))}
@@ -817,7 +815,7 @@ export default function CategoriesPage() {
                   <div className="flex items-end">
                     <Button onClick={handleAddCategory} className="w-full sm:w-auto">
                       <Plus className="h-4 w-4 mr-2" />
-                      Add Category
+                      {t('cat.addCategory')}
                     </Button>
                   </div>
                 </div>
@@ -827,16 +825,14 @@ export default function CategoriesPage() {
             {/* Current Categories */}
             <Card>
               <CardHeader>
-                <CardTitle>Your Categories ({data.categories.length})</CardTitle>
+                <CardTitle>{t('cat.yourCategories')} ({data.categories.length})</CardTitle>
               </CardHeader>
               <CardContent>
                 {data.categories.length === 0 ? (
                   <div className="text-center py-8">
                     <Tag className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No categories yet</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Use smart presets above or add your first custom category
-                    </p>
+                    <h3 className="text-lg font-medium mb-2">{t('cat.none')}</h3>
+                    <p className="text-muted-foreground mb-4">{t('cat.none.desc')}</p>
                   </div>
                 ) : (
                   <div className="grid gap-4">
@@ -903,15 +899,13 @@ export default function CategoriesPage() {
                               </DialogTrigger>
                               <DialogContent>
                                 <DialogHeader>
-                                  <DialogTitle>Edit Category</DialogTitle>
-                                  <DialogDescription>
-                                    Modify your category settings
-                                  </DialogDescription>
+                                  <DialogTitle>{t('cat.edit')}</DialogTitle>
+                                  <DialogDescription>{t('cat.edit.desc')}</DialogDescription>
                                 </DialogHeader>
                                 {editingCategory && (
                                   <div className="space-y-4">
                                     <div>
-                                      <Label htmlFor="edit-name">Category Name</Label>
+                                      <Label htmlFor="edit-name">{t('cat.categoryName')}</Label>
                                       <Input
                                         id="edit-name"
                                         value={editingCategory.name}
@@ -921,7 +915,7 @@ export default function CategoriesPage() {
                                       />
                                     </div>
                                     <div>
-                                      <Label htmlFor="edit-limit">Monthly Limit</Label>
+                                      <Label htmlFor="edit-limit">{t('cat.monthlyLimit')}</Label>
                                       <Input
                                         id="edit-limit"
                                         type="number"
@@ -932,7 +926,7 @@ export default function CategoriesPage() {
                                       />
                                     </div>
                                     <div>
-                                      <Label htmlFor="edit-color">Category Color</Label>
+                                      <Label htmlFor="edit-color">{t('cat.categoryColor')}</Label>
                                       <div className="grid grid-cols-8 gap-2 mt-2">
                                         {[
                                           '#ef4444', '#f97316', '#eab308', '#22c55e',
@@ -965,7 +959,7 @@ export default function CategoriesPage() {
                                         variant="outline"
                                         onClick={() => setEditingCategory(null)}
                                       >
-                                        Cancel
+                                        {t('cat.cancel')}
                                       </Button>
                                       <Select
                                         value={editingCategory.allocation || 'essentials'}
@@ -983,7 +977,7 @@ export default function CategoriesPage() {
                                       <Button
                                         onClick={() => handleEditCategory(editingCategory)}
                                       >
-                                        Save Changes
+                                        {t('cat.saveChanges')}
                                       </Button>
                                     </div>
                                   </div>

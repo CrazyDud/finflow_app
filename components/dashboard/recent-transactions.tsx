@@ -32,6 +32,7 @@ import { useToast } from '@/hooks/use-toast';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Income, Expense } from '@/lib/types';
 import { EditTransactionDialog } from '@/components/shared/edit-transaction-dialog';
+import { useI18n } from '@/components/i18n/i18n-provider';
 
 type Transaction = (Income | Expense) & {
   type: 'income' | 'expense';
@@ -44,6 +45,7 @@ export function RecentTransactions() {
   const { toast } = useToast();
   const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null);
   const [transactionToEdit, setTransactionToEdit] = useState<Transaction | null>(null);
+  const { t } = useI18n();
 
   const handleDeleteTransaction = async () => {
     if (!transactionToDelete) return;
@@ -52,13 +54,13 @@ export function RecentTransactions() {
       if (transactionToDelete.type === 'income') {
         deleteIncome(transactionToDelete.id);
         toast({
-          title: '✅ Income deleted',
+          title: '✅ ' + (t('notifications.incomeDeleted') || 'Income deleted'),
           description: `${formatCurrency(transactionToDelete.amount, transactionToDelete.currency, currencyRates)} removed successfully`,
         });
       } else {
         deleteExpense(transactionToDelete.id);
         toast({
-          title: '✅ Expense deleted',
+          title: '✅ ' + (t('notifications.expenseDeleted') || 'Expense deleted'),
           description: `${formatCurrency(transactionToDelete.amount, transactionToDelete.currency, currencyRates)} removed successfully`,
         });
       }
@@ -68,8 +70,8 @@ export function RecentTransactions() {
       setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to delete transaction',
+        title: t('common.error') || 'Error',
+        description: t('errors.failedToDelete') || 'Failed to delete transaction',
         variant: 'destructive',
       });
     }
@@ -118,11 +120,11 @@ export function RecentTransactions() {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center space-x-2">
               <Clock className="h-5 w-5" />
-              <span>Recent Transactions</span>
+              <span>{t('recent.title')}</span>
             </CardTitle>
             <Link href="/transactions">
               <Button variant="ghost" size="sm">
-                View All
+                {t('recent.viewAll')}
                 <ArrowRight className="h-4 w-4 ml-1" />
               </Button>
             </Link>
@@ -204,19 +206,19 @@ export function RecentTransactions() {
           ) : (
             <div className="py-8 text-center space-y-2">
               <Receipt className="h-12 w-12 text-muted-foreground mx-auto" />
-              <p className="text-sm text-muted-foreground">No transactions yet</p>
+              <p className="text-sm text-muted-foreground">{t('recent.empty.title')}</p>
               <p className="text-xs text-muted-foreground">
-                Start by adding some income or expenses
+                {t('recent.empty.subtitle')}
               </p>
               <div className="flex justify-center space-x-2 mt-4">
                 <Link href="/add?type=income">
                   <Button size="sm" variant="outline">
-                    Add Income
+                    {t('recent.addIncome')}
                   </Button>
                 </Link>
                 <Link href="/add?type=expense">
                   <Button size="sm" variant="outline">
-                    Add Expense
+                    {t('recent.addExpense')}
                   </Button>
                 </Link>
               </div>
@@ -231,10 +233,10 @@ export function RecentTransactions() {
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center space-x-2">
               <AlertTriangle className="h-5 w-5 text-amber-500" />
-              <span>Delete Transaction</span>
+              <span>{t('recent.deleteTitle')}</span>
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this {transactionToDelete?.type}? 
+              {t('recent.deleteConfirm')} {transactionToDelete?.type}? 
               <br />
               <strong>
                 {transactionToDelete && formatCurrency(
@@ -244,16 +246,16 @@ export function RecentTransactions() {
                 )}
               </strong>
               <br />
-              This action cannot be undone.
+              {t('recent.deleteIrreversible')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('recent.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteTransaction}
               className="bg-red-600 hover:bg-red-700"
             >
-              Delete
+              {t('recent.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -8,15 +8,17 @@ import { CategoryLimitsCard } from './category-limits-card';
 import { BudgetInsights } from './budget-insights';
 import { useFinance } from '@/hooks/use-finance';
 import { Loader2 } from 'lucide-react';
+import { useI18n } from '@/components/i18n/i18n-provider';
 
 export function BudgetPage() {
   const { loading, data } = useFinance();
+  const { t } = useI18n();
 
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Loading budget data...</span>
+        <span className="ml-2">{t('budget.loading')}</span>
       </div>
     );
   }
@@ -24,7 +26,7 @@ export function BudgetPage() {
   if (!data) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <p className="text-muted-foreground">Unable to load budget data</p>
+        <p className="text-muted-foreground">{t('budget.unable')}</p>
       </div>
     );
   }
@@ -40,11 +42,9 @@ export function BudgetPage() {
         transition={{ duration: 0.5 }}
       >
         <div className="flex flex-col space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">Budget Management</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('budget.title')}</h1>
           <p className="text-muted-foreground">
-            {isProMode 
-              ? "Advanced budget planning and category management" 
-              : "Simple budget allocation and spending limits"}
+            {isProMode ? t('budget.subtitle.pro') : t('budget.subtitle.simple')}
           </p>
         </div>
       </motion.div>

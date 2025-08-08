@@ -12,10 +12,12 @@ import { Switch } from '@/components/ui/switch';
 import { Target, Settings, Save, RotateCcw } from 'lucide-react';
 import { useFinance } from '@/hooks/use-finance';
 import { useToast } from '@/hooks/use-toast';
+import { useI18n } from '@/components/i18n/i18n-provider';
 
 export function BudgetAllocationCard() {
   const { data, updateSettings } = useFinance();
   const { toast } = useToast();
+  const { t } = useI18n();
   const [isEditing, setIsEditing] = useState(false);
   const [allocation, setAllocation] = useState({
     essentials: data?.settings.budgetAllocation.essentials || 50,
@@ -30,8 +32,8 @@ export function BudgetAllocationCard() {
     
     if (total !== 100) {
       toast({
-        title: 'Invalid allocation',
-        description: 'Total allocation must equal 100%',
+        title: t('budget.invalid'),
+        description: t('budget.invalid.desc'),
         variant: 'destructive',
       });
       return;
@@ -43,8 +45,8 @@ export function BudgetAllocationCard() {
     });
 
     toast({
-      title: 'Budget updated',
-      description: 'Your budget allocation has been saved successfully',
+      title: t('budget.updated'),
+      description: t('budget.updated.desc'),
     });
 
     setIsEditing(false);
@@ -76,11 +78,11 @@ export function BudgetAllocationCard() {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center space-x-2">
             <Target className="h-5 w-5" />
-            <span>Budget Allocation</span>
+            <span>{t('budget.allocation')}</span>
           </CardTitle>
           <div className="flex items-center space-x-2">
             <Label htmlFor="custom-allocation" className="text-sm">
-              Custom
+              {t('budget.custom')}
             </Label>
             <Switch
               id="custom-allocation"
@@ -95,29 +97,29 @@ export function BudgetAllocationCard() {
         <div className="grid gap-4 md:grid-cols-3">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-sm font-medium">Essentials</Label>
+              <Label className="text-sm font-medium">{t('budget.essentials')}</Label>
               <Badge variant="secondary">{data.settings.budgetAllocation.essentials}%</Badge>
             </div>
             <Progress value={data.settings.budgetAllocation.essentials} className="h-2" />
-            <p className="text-xs text-muted-foreground">Bills, groceries, utilities</p>
+            <p className="text-xs text-muted-foreground">{t('budget.essentials.hint')}</p>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-sm font-medium">Investments</Label>
+              <Label className="text-sm font-medium">{t('budget.investments')}</Label>
               <Badge variant="secondary">{data.settings.budgetAllocation.investments}%</Badge>
             </div>
             <Progress value={data.settings.budgetAllocation.investments} className="h-2" />
-            <p className="text-xs text-muted-foreground">Savings, investments</p>
+            <p className="text-xs text-muted-foreground">{t('budget.investments.hint')}</p>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-sm font-medium">Fun Money</Label>
+              <Label className="text-sm font-medium">{t('budget.fun')}</Label>
               <Badge variant="secondary">{data.settings.budgetAllocation.fun}%</Badge>
             </div>
             <Progress value={data.settings.budgetAllocation.fun} className="h-2" />
-            <p className="text-xs text-muted-foreground">Entertainment, hobbies</p>
+            <p className="text-xs text-muted-foreground">{t('budget.fun.hint')}</p>
           </div>
         </div>
 
@@ -133,7 +135,7 @@ export function BudgetAllocationCard() {
             return (
               <div key={key} className="text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground capitalize">{key} allocation</span>
+                  <span className="text-muted-foreground capitalize">{t('budget.calculatedAllocation')}</span>
                   <span className="font-medium">{allocated.toLocaleString()}</span>
                 </div>
               </div>
@@ -145,14 +147,14 @@ export function BudgetAllocationCard() {
         {data.settings.customAllocation && (
           <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-medium">Customize Allocation</h4>
+              <h4 className="text-sm font-medium">{t('budget.customize')}</h4>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsEditing(!isEditing)}
               >
                 <Settings className="h-4 w-4 mr-1" />
-                {isEditing ? 'Cancel' : 'Edit'}
+                {isEditing ? t('budget.cancel') : t('budget.edit')}
               </Button>
             </div>
 
@@ -160,7 +162,7 @@ export function BudgetAllocationCard() {
               <div className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-3">
                   <div className="space-y-2">
-                    <Label htmlFor="essentials">Essentials (%)</Label>
+                    <Label htmlFor="essentials">{t('budget.essentials')} (%)</Label>
                     <Input
                       id="essentials"
                       type="number"
@@ -175,7 +177,7 @@ export function BudgetAllocationCard() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="investments">Investments (%)</Label>
+                    <Label htmlFor="investments">{t('budget.investments')} (%)</Label>
                     <Input
                       id="investments"
                       type="number"
@@ -190,7 +192,7 @@ export function BudgetAllocationCard() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="fun">Fun Money (%)</Label>
+                    <Label htmlFor="fun">{t('budget.fun')} (%)</Label>
                     <Input
                       id="fun"
                       type="number"
@@ -207,7 +209,7 @@ export function BudgetAllocationCard() {
 
                 <div className="flex items-center justify-between pt-2">
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm">Total:</span>
+                    <span className="text-sm">{t('budget.total')}</span>
                     <Badge variant={isValidTotal ? "default" : "destructive"}>
                       {total}%
                     </Badge>
@@ -216,11 +218,11 @@ export function BudgetAllocationCard() {
                   <div className="flex space-x-2">
                     <Button variant="outline" size="sm" onClick={handleReset}>
                       <RotateCcw className="h-4 w-4 mr-1" />
-                      Reset
+                      {t('budget.reset')}
                     </Button>
                     <Button size="sm" onClick={handleSave} disabled={!isValidTotal}>
                       <Save className="h-4 w-4 mr-1" />
-                      Save
+                      {t('budget.save')}
                     </Button>
                   </div>
                 </div>
