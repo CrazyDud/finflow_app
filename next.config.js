@@ -12,17 +12,17 @@ const nextConfig = {
     const csp = [
       "default-src 'self'",
       // Allow Google Translate and eval required by it
-      "script-src 'self' 'unsafe-eval' https://translate.google.com https://translate.googleapis.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://translate.google.com https://translate.googleapis.com https://*.google.com https://*.gstatic.com",
       // Inline styles are injected by the widget
       "style-src 'self' 'unsafe-inline' https://translate.googleapis.com https://fonts.googleapis.com",
       // Images and data URIs
-      "img-src 'self' data: https://translate.google.com https://translate.googleapis.com",
+      "img-src 'self' data: https://translate.google.com https://translate.googleapis.com https://*.gstatic.com",
       // Fonts
       "font-src 'self' data: https://fonts.gstatic.com",
       // Iframes used by the widget
-      "frame-src 'self' https://translate.google.com https://translate.googleapis.com",
+      "frame-src 'self' https://translate.google.com https://translate.googleapis.com https://*.gstatic.com",
       // XHR/fetch
-      "connect-src 'self' https://translate.google.com https://translate.googleapis.com",
+      "connect-src 'self' https://translate.google.com https://translate.googleapis.com https://*.gstatic.com",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
