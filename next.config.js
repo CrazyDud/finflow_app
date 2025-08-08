@@ -11,7 +11,8 @@ const nextConfig = {
   async headers() {
     const csp = [
       "default-src 'self'",
-      "script-src 'self'",
+      // Allow Next.js inline bootstrapping scripts (no eval)
+      "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data:",
       "font-src 'self' data: https://fonts.gstatic.com",
