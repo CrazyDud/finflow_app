@@ -1,19 +1,12 @@
-const path = require('path');
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  distDir: process.env.NEXT_DIST_DIR || '.next',
-  output: process.env.NEXT_OUTPUT_MODE,
-  experimental: {
-    outputFileTracingRoot: path.join(__dirname, '../'),
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: false,
-  },
+  // Keep defaults so Vercel looks for .next in the project root
+  eslint: { ignoreDuringBuilds: true },
   images: { unoptimized: true },
+  experimental: {
+    // Ensure tracing is rooted at the project directory to avoid /path0/path0 duplication
+    outputFileTracingRoot: process.cwd(),
+  },
 };
 
 module.exports = nextConfig;

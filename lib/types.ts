@@ -14,6 +14,7 @@ export interface ExpenseCategory {
   color: string;
   limit: number;
   currency: string;
+  allocation?: 'essentials' | 'investments' | 'fun';
 }
 
 export interface Expense {
@@ -45,6 +46,8 @@ export interface UserSettings {
   customAllocation: boolean;
   notifications: boolean;
   theme: 'light' | 'dark' | 'system';
+  autoCalcLimits?: boolean;
+  budgetBasisMonth?: string; // YYYY-MM
 }
 
 export interface FinanceData {

@@ -11,9 +11,9 @@ import {
   AlertCircle, 
   CheckCircle,
   Target,
-  DollarSign,
   Calendar
 } from 'lucide-react';
+import { MoneySymbol } from '@/components/ui/money-symbol';
 import { useFinance } from '@/hooks/use-finance';
 import { 
   formatCurrency, 
@@ -165,7 +165,7 @@ export function BudgetInsights() {
     <Card className="h-full">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <DollarSign className="h-5 w-5" />
+          <MoneySymbol className="h-5 w-5" />
           <span>Budget Insights</span>
         </CardTitle>
       </CardHeader>

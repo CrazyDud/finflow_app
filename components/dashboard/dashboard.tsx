@@ -8,6 +8,7 @@ import { EnhancedSuperQuickActions } from './enhanced-super-quick-actions';
 import { SmartQuickActions } from './smart-quick-actions';
 import { EnhancedQuickActions } from './enhanced-quick-actions';
 import { SpendingChart } from './spending-chart';
+import { NewQuickAddCard } from './new-quick-add-card';
 import { MonthlyOverview } from './monthly-overview';
 import { BudgetProgress } from './budget-progress';
 import { RecentTransactions } from './recent-transactions';
@@ -34,36 +35,98 @@ interface DashboardCard {
   proOnly?: boolean;
 }
 
+// Registry of stable card definitions. This avoids persisting React components in localStorage.
+const CARD_REGISTRY: Record<string, { name: string; component: React.ComponentType; proOnly?: boolean }> = {
+  'stats': { name: 'Overview Cards', component: StatsCards },
+  'super-quick-actions': { name: 'Lightning Quick Add', component: EnhancedSuperQuickActions },
+  'smart-quick-actions': { name: 'Smart Quick Actions', component: SmartQuickActions },
+  'monthly-overview': { name: 'Monthly Overview', component: MonthlyOverview },
+  'budget-progress': { name: 'Budget Progress', component: BudgetProgress, proOnly: true },
+  'spending-chart': { name: 'Spending Chart', component: SpendingChart, proOnly: true },
+  'navigation': { name: 'Navigation Tools', component: EnhancedQuickActions },
+  'recent-transactions': { name: 'Recent Transactions', component: RecentTransactions },
+};
+
+type StoredDashboardCard = {
+  id: string;
+  order: number;
+  visible: boolean;
+};
+
+function buildDefaultCards(): DashboardCard[] {
+  const ids = [
+    'stats',
+    'super-quick-actions',
+    'smart-quick-actions',
+    'monthly-overview',
+    'budget-progress',
+    'spending-chart',
+    'navigation',
+    'recent-transactions',
+  ];
+  return ids.map((id, index) => {
+    const def = CARD_REGISTRY[id];
+    return {
+      id,
+      name: def.name,
+      component: def.component,
+      order: index + 1,
+      visible: true,
+      proOnly: def.proOnly,
+    };
+  });
+}
+
 export function Dashboard() {
   const { data } = useFinance();
   const [isEditMode, setIsEditMode] = useState(false);
   const [cardOrder, setCardOrder] = useState<DashboardCard[]>([]);
   
   useEffect(() => {
-    // Initialize default card order
-    const defaultCards: DashboardCard[] = [
-      { id: 'stats', name: 'Overview Cards', component: StatsCards, order: 1, visible: true },
-      { id: 'super-quick-actions', name: 'Lightning Quick Add', component: EnhancedSuperQuickActions, order: 2, visible: true },
-      { id: 'smart-quick-actions', name: 'Smart Quick Actions', component: SmartQuickActions, order: 3, visible: true },
-      { id: 'monthly-overview', name: 'Monthly Overview', component: MonthlyOverview, order: 4, visible: true },
-      { id: 'budget-progress', name: 'Budget Progress', component: BudgetProgress, order: 5, visible: true, proOnly: true },
-      { id: 'spending-chart', name: 'Spending Chart', component: SpendingChart, order: 6, visible: true, proOnly: true },
-      { id: 'navigation', name: 'Navigation Tools', component: EnhancedQuickActions, order: 7, visible: true },
-      { id: 'recent-transactions', name: 'Recent Transactions', component: RecentTransactions, order: 8, visible: true },
+    const defaults = buildDefaultCards();
+    // Inject Quick Add card just after Overview Cards
+    const withQuickAdd: DashboardCard[] = [
+      { id: 'quick-add', name: 'Quick Add', component: NewQuickAddCard, order: 2, visible: true },
+      ...defaults.map((c) => ({ ...c, order: c.order >= 2 ? c.order + 1 : c.order })),
     ];
 
-    // Load saved order or use defaults
-    const saved = localStorage.getItem('dashboard_card_order');
-    if (saved) {
-      setCardOrder(JSON.parse(saved));
-    } else {
-      setCardOrder(defaultCards);
+    try {
+      const savedRaw = localStorage.getItem('dashboard_card_order');
+      if (!savedRaw) {
+        setCardOrder(withQuickAdd);
+        return;
+      }
+
+      const savedParsed = JSON.parse(savedRaw) as Array<StoredDashboardCard | any>;
+
+      // Restore only id/order/visible from saved data, and rehydrate components from registry
+      const base = withQuickAdd;
+      const restored: DashboardCard[] = base.map((def) => {
+        const match = savedParsed.find((c: any) => c && c.id === def.id);
+        const order = typeof match?.order === 'number' ? match.order : def.order;
+        const visible = typeof match?.visible === 'boolean' ? match.visible : def.visible;
+        return { ...def, order, visible };
+      });
+
+      // If saved contained unknown cards, ignore; if saved was malformed, fall back to defaults
+      const anyInvalid = savedParsed.some((c: any) => c && c.component && typeof c.component !== 'function');
+      if (anyInvalid) {
+        // Rewrite storage with sanitized structure
+        const serialized = restored.map((c) => ({ id: c.id, order: c.order, visible: c.visible }));
+        localStorage.setItem('dashboard_card_order', JSON.stringify(serialized));
+      }
+
+      setCardOrder(restored.sort((a, b) => a.order - b.order));
+    } catch (_e) {
+      setCardOrder(defaults);
     }
   }, []);
 
   const saveOrder = (newOrder: DashboardCard[]) => {
     setCardOrder(newOrder);
-    localStorage.setItem('dashboard_card_order', JSON.stringify(newOrder));
+    // Persist only serializable fields
+    const serialized: StoredDashboardCard[] = newOrder.map((c) => ({ id: c.id, order: c.order, visible: c.visible }));
+    localStorage.setItem('dashboard_card_order', JSON.stringify(serialized));
   };
 
   const toggleCardVisibility = (cardId: string) => {

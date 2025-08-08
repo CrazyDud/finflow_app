@@ -11,7 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useFinance } from '@/hooks/use-finance';
 import { generateId, formatCurrency } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, DollarSign } from 'lucide-react';
+import { Loader2, Save } from 'lucide-react';
+import { MoneySymbol } from '@/components/ui/money-symbol';
 
 interface TransactionFormProps {
   type: 'income' | 'expense';
@@ -122,7 +123,7 @@ export function TransactionForm({ type, onSuccess }: TransactionFormProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <DollarSign className="h-5 w-5" />
+          <MoneySymbol className="h-5 w-5" />
           <span>{type === 'income' ? 'Add Income' : 'Add Expense'}</span>
         </CardTitle>
       </CardHeader>
@@ -144,7 +145,7 @@ export function TransactionForm({ type, onSuccess }: TransactionFormProps) {
                 className="pl-8"
               />
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
+               <MoneySymbol className="text-muted-foreground" />
               </div>
             </div>
             

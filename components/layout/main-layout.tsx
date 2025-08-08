@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
@@ -47,6 +47,7 @@ const navigation: NavigationItem[] = [
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { data, updateSettings } = useFinance();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
@@ -57,10 +58,8 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
       updateSettings({
         mode: checked ? 'pro' : 'simple'
       });
-      // Refresh page after mode switch
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
+      // Send user to Dashboard when switching modes
+      router.push('/');
     }
   };
 
@@ -119,10 +118,9 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-            {navigation.map((item) => {
+            {(isProMode ? navigation : navigation.filter(n => !n.proOnly)).map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
-              const isDisabled = item.proOnly && !isProMode;
               
               return (
                 <Link
@@ -130,18 +128,13 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                   href={item.href}
                   className={`
                     flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors
-                    ${isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : isDisabled
-                      ? 'text-muted-foreground cursor-not-allowed opacity-50'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                    }
+                    ${isActive ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}
                   `}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Icon className="mr-3 h-5 w-5" />
                   <span>{item.name}</span>
-                  {item.proOnly && (
+                  {item.proOnly && isProMode && (
                     <Badge variant="secondary" className="ml-auto text-xs">
                       Pro
                     </Badge>

@@ -19,9 +19,9 @@ import {
   Calendar,
   Settings,
   Zap,
-  Save,
-  DollarSign
+  Save
 } from 'lucide-react';
+import { MoneySymbol } from '@/components/ui/money-symbol';
 import { useFinance } from '@/hooks/use-finance';
 import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils';
@@ -195,7 +195,9 @@ export function QuickActions() {
                     onChange={(e) => setQuickIncome(prev => ({ ...prev, amount: e.target.value }))}
                     className="pl-8"
                   />
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    <MoneySymbol />
+                  </span>
                 </div>
                 <Input
                   placeholder="Source (optional)"
@@ -224,7 +226,9 @@ export function QuickActions() {
                     onChange={(e) => setQuickExpense(prev => ({ ...prev, amount: e.target.value }))}
                     className="pl-8 w-24"
                   />
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                     <MoneySymbol />
+                   </span>
                 </div>
                 <Select 
                   value={quickExpense.categoryId} 

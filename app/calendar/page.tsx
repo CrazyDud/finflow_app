@@ -24,6 +24,7 @@ import {
   Zap,
   DollarSign
 } from 'lucide-react';
+import { MoneySymbol } from '@/components/ui/money-symbol';
 import { useFinance } from '@/hooks/use-finance';
 import { formatCurrency } from '@/lib/utils';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, startOfWeek, endOfWeek } from 'date-fns';
@@ -272,7 +273,7 @@ export default function CalendarPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
-                <DollarSign className="h-4 w-4 text-blue-600" />
+                <span className="text-blue-600"><MoneySymbol /></span>
                 <div className="text-sm font-medium text-muted-foreground">Net Monthly</div>
               </div>
               <div className="text-2xl font-bold text-blue-600">

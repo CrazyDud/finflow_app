@@ -18,7 +18,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFinance } from '@/hooks/use-finance';
 import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils';
-import { Loader2, Save, DollarSign, Wallet, CreditCard } from 'lucide-react';
+import { Loader2, Save, Wallet, CreditCard } from 'lucide-react';
+import { MoneySymbol } from '@/components/ui/money-symbol';
 
 interface QuickTransactionDialogProps {
   open: boolean;
@@ -126,7 +127,7 @@ export function QuickTransactionDialog({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
-            <DollarSign className="h-5 w-5" />
+            <MoneySymbol className="h-5 w-5" />
             <span>Quick Add Transaction</span>
           </DialogTitle>
           <DialogDescription>
@@ -162,8 +163,8 @@ export function QuickTransactionDialog({
                   required
                   className="pl-8"
                 />
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
+                  <MoneySymbol />
                 </div>
               </div>
             </div>

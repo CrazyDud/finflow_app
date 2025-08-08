@@ -19,12 +19,12 @@ import {
   Settings,
   Zap,
   ArrowRight,
-  DollarSign,
   Sparkles,
   Activity,
   BarChart3,
   FileText
 } from 'lucide-react';
+import { MoneySymbol } from '@/components/ui/money-symbol';
 import { useFinance } from '@/hooks/use-finance';
 import { useToast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/lib/utils';
@@ -41,7 +41,7 @@ interface QuickAction {
 }
 
 export function EnhancedQuickActions() {
-  const { data, addIncome, addExpense, currencyRates } = useFinance();
+  const { data, addIncome, addExpense, deleteIncome, deleteExpense, currencyRates } = useFinance();
   const { toast } = useToast();
   const isProMode = data?.settings.mode === 'pro';
   const [showTransactionDialog, setShowTransactionDialog] = useState(false);
@@ -69,23 +69,34 @@ export function EnhancedQuickActions() {
     }
 
     try {
-      addExpense({
+      const createdId = addExpense({
         amount,
         currency: data.settings.defaultCurrency,
         categoryId: quickExpense.categoryId,
         date: new Date().toISOString(),
         description: 'Quick expense'
       });
+      if (data.settings.autoCalcLimits) {
+        try { localStorage.setItem('needs_recalc', 'income'); } catch {}
+      }
 
       toast({
         title: '✅ Expense added',
         description: `${formatCurrency(amount, data.settings.defaultCurrency, currencyRates)} recorded successfully`,
+        action: (
+          <Button
+            onClick={() => {
+              if (!createdId) return;
+              deleteExpense(createdId);
+            }}
+          >
+            Undo
+          </Button>
+        ),
       });
 
       setQuickExpense({ amount: '', categoryId: '' });
-      
-      // Auto refresh to update dashboard stats
-      setTimeout(() => window.location.reload(), 1200);
+      // No page reload; UI updates optimistically
     } catch (error) {
       toast({
         title: 'Error',
@@ -116,22 +127,33 @@ export function EnhancedQuickActions() {
     }
 
     try {
-      addIncome({
+      const createdId = addIncome({
         amount,
         currency: data.settings.defaultCurrency,
         date: new Date().toISOString(),
         description: quickIncome.source || 'Quick income'
       });
+      if (data.settings.autoCalcLimits) {
+        try { localStorage.setItem('needs_recalc', 'income'); } catch {}
+      }
 
       toast({
         title: '💰 Income added',
         description: `${formatCurrency(amount, data.settings.defaultCurrency, currencyRates)} recorded successfully`,
+        action: (
+          <Button
+            onClick={() => {
+              if (!createdId) return;
+              deleteIncome(createdId);
+            }}
+          >
+            Undo
+          </Button>
+        ),
       });
 
       setQuickIncome({ amount: '', source: '' });
-      
-      // Auto refresh to update dashboard stats
-      setTimeout(() => window.location.reload(), 1200);
+      // No reload; state is already updated
     } catch (error) {
       toast({
         title: 'Error',

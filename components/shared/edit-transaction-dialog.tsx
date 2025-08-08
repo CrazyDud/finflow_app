@@ -11,7 +11,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, DollarSign } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
+import { MoneySymbol } from '@/components/ui/money-symbol';
 import { format } from 'date-fns';
 import { useFinance } from '@/hooks/use-finance';
 import { useToast } from '@/hooks/use-toast';
@@ -142,7 +143,9 @@ export function EditTransactionDialog({ transaction, onClose, onUpdate }: EditTr
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                 className="pl-8"
               />
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <MoneySymbol />
+              </span>
             </div>
           </div>
 

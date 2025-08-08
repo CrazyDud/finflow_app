@@ -121,6 +121,26 @@ export function BudgetAllocationCard() {
           </div>
         </div>
 
+        {/* Calculated Allocation based on current month income */}
+        <div className="grid gap-4 md:grid-cols-3">
+          {(['essentials','investments','fun'] as const).map((key) => {
+            const pct = data.settings.budgetAllocation[key];
+            const month = new Date().toISOString().slice(0,7);
+            const monthIncome = data.income
+              .filter(inc => inc.date.startsWith(month))
+              .reduce((sum, inc) => sum + inc.amount, 0);
+            const allocated = Math.round((monthIncome * pct) / 100);
+            return (
+              <div key={key} className="text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground capitalize">{key} allocation</span>
+                  <span className="font-medium">{allocated.toLocaleString()}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
         {/* Edit Mode */}
         {data.settings.customAllocation && (
           <div className="space-y-4 p-4 border rounded-lg bg-muted/50">

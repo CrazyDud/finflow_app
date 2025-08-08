@@ -37,7 +37,7 @@ export function useFinance() {
   }, []);
 
   // Income operations
-  const addIncome = useCallback((income: Omit<Income, 'id'>) => {
+  const addIncome = useCallback((income: Omit<Income, 'id'>): string | undefined => {
     if (!data) return;
     
     const newIncome: Income = {
@@ -51,6 +51,8 @@ export function useFinance() {
     };
     
     saveData(newData);
+    try { localStorage.setItem('needs_recalc', 'income'); } catch {}
+    return newIncome.id;
   }, [data, saveData]);
 
   const updateIncome = useCallback((id: string, updates: Partial<Income>) => {
@@ -78,7 +80,7 @@ export function useFinance() {
   }, [data, saveData]);
 
   // Expense operations
-  const addExpense = useCallback((expense: Omit<Expense, 'id'>) => {
+  const addExpense = useCallback((expense: Omit<Expense, 'id'>): string | undefined => {
     if (!data) return;
     
     const newExpense: Expense = {
@@ -92,6 +94,7 @@ export function useFinance() {
     };
     
     saveData(newData);
+    return newExpense.id;
   }, [data, saveData]);
 
   const updateExpense = useCallback((id: string, updates: Partial<Expense>) => {
@@ -169,6 +172,45 @@ export function useFinance() {
     };
     
     saveData(newData);
+    if (Object.prototype.hasOwnProperty.call(updates, 'budgetAllocation')) {
+      try { localStorage.setItem('needs_recalc', 'allocation'); } catch {}
+    }
+  }, [data, saveData]);
+
+  // Recalculate category limits from allocation for a given basis month
+  const recalcCategoryLimits = useCallback((basisMonth?: string) => {
+    if (!data) return false;
+    const month = basisMonth || data.settings.budgetBasisMonth || new Date().toISOString().slice(0,7);
+    const monthIncome = data.income.filter(i => i.date.startsWith(month)).reduce((s,i)=>s+i.amount,0);
+    if (monthIncome <= 0) return false;
+
+    const pools = {
+      essentials: (monthIncome * data.settings.budgetAllocation.essentials) / 100,
+      investments: (monthIncome * data.settings.budgetAllocation.investments) / 100,
+      fun: (monthIncome * data.settings.budgetAllocation.fun) / 100,
+    } as const;
+
+    const byBucket: Record<'essentials'|'investments'|'fun', ExpenseCategory[]> = {
+      essentials: [], investments: [], fun: []
+    };
+    data.categories.forEach(c => {
+      const bucket = (c.allocation || 'essentials') as 'essentials'|'investments'|'fun';
+      byBucket[bucket].push(c);
+    });
+
+    const updatedCategories = data.categories.map(cat => ({ ...cat }));
+    (Object.keys(byBucket) as Array<keyof typeof byBucket>).forEach(bucket => {
+      const list = byBucket[bucket];
+      if (list.length === 0) return;
+      const per = Math.round(pools[bucket] / list.length);
+      list.forEach(c => {
+        const idx = updatedCategories.findIndex(x => x.id === c.id);
+        if (idx >= 0) updatedCategories[idx].limit = per;
+      });
+    });
+
+    saveData({ ...data, categories: updatedCategories });
+    return true;
   }, [data, saveData]);
 
   // Dashboard statistics
@@ -270,6 +312,7 @@ export function useFinance() {
     addCategory,
     updateCategory,
     deleteCategory,
+    recalcCategoryLimits,
     
     // Settings operations
     updateSettings,

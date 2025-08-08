@@ -16,12 +16,12 @@ import {
   Zap, 
   Plus, 
   Settings, 
-  DollarSign,
   Wallet,
   CreditCard,
   Clock,
   TrendingUp
 } from 'lucide-react';
+import { MoneySymbol } from '@/components/ui/money-symbol';
 
 interface QuickActionButton {
   id: string;
@@ -35,7 +35,7 @@ interface QuickActionButton {
 }
 
 export function EnhancedSuperQuickActions() {
-  const { data, addIncome, addExpense } = useFinance();
+  const { data, addIncome, addExpense, deleteIncome, deleteExpense } = useFinance();
   const { toast } = useToast();
   const [quickActions, setQuickActions] = useState<QuickActionButton[]>([]);
   const [showAmountDialog, setShowAmountDialog] = useState<QuickActionButton | null>(null);
@@ -77,12 +77,15 @@ export function EnhancedSuperQuickActions() {
     }
 
     try {
-      addIncome({
+      const createdId = addIncome({
         amount: finalAmount,
         currency: data.settings.defaultCurrency,
         date: new Date().toISOString(),
         description: 'Quick income'
       });
+      if (data.settings.autoCalcLimits) {
+        try { localStorage.setItem('needs_recalc', 'income'); } catch {}
+      }
 
       saveLastAmount('income', finalAmount);
       setQuickIncomeAmount('');
@@ -90,10 +93,10 @@ export function EnhancedSuperQuickActions() {
       toast({
         title: '💰 Income added',
         description: `${formatCurrency(finalAmount, data.settings.defaultCurrency, [])} recorded`,
+        action: (
+          <Button onClick={() => createdId && deleteIncome(createdId)}>Undo</Button>
+        ),
       });
-
-      // Auto refresh page to update all dashboard stats
-      setTimeout(() => window.location.reload(), 1500);
     } catch (error) {
       toast({
         title: 'Error',
@@ -117,7 +120,7 @@ export function EnhancedSuperQuickActions() {
     }
 
     try {
-      addExpense({
+      const createdId = addExpense({
         amount: finalAmount,
         currency: data.settings.defaultCurrency,
         categoryId: finalCategoryId,
@@ -132,10 +135,10 @@ export function EnhancedSuperQuickActions() {
       toast({
         title: '💸 Expense added',
         description: `${formatCurrency(finalAmount, data.settings.defaultCurrency, [])} recorded`,
+        action: (
+          <Button onClick={() => createdId && deleteExpense(createdId)}>Undo</Button>
+        ),
       });
-
-      // Auto refresh page to update all dashboard stats
-      setTimeout(() => window.location.reload(), 1500);
     } catch (error) {
       toast({
         title: 'Error',
@@ -226,7 +229,9 @@ export function EnhancedSuperQuickActions() {
                     onChange={(e) => setQuickIncomeAmount(e.target.value)}
                     className="pl-8"
                   />
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-emerald-500" />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500">
+                    <MoneySymbol />
+                  </span>
                 </div>
                 <Button 
                   onClick={() => handleQuickIncome()} 
@@ -267,7 +272,9 @@ export function EnhancedSuperQuickActions() {
                       onChange={(e) => setQuickExpenseAmount(e.target.value)}
                       className="pl-8"
                     />
-                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-red-500" />
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-red-500">
+                      <MoneySymbol />
+                    </span>
                   </div>
                   <Button 
                     onClick={() => handleQuickExpense()} 
@@ -387,7 +394,9 @@ export function EnhancedSuperQuickActions() {
                 className="pl-8"
                 autoFocus
               />
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <MoneySymbol />
+              </span>
             </div>
             <div className="flex justify-end space-x-2">
               <Button variant="outline" onClick={() => setShowAmountDialog(null)}>

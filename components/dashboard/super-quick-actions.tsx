@@ -25,12 +25,12 @@ import {
   CreditCard,
   Trash2,
   Edit3,
-  DollarSign,
   Fuel,
   Lightbulb,
   Building,
   Wifi
 } from 'lucide-react';
+import { MoneySymbol } from '@/components/ui/money-symbol';
 
 interface QuickActionButton {
   id: string;
@@ -222,7 +222,9 @@ export function SuperQuickActions() {
                       onChange={(e) => setNewAction(prev => ({ ...prev, amount: e.target.value }))}
                       className="pl-8"
                     />
-                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    <MoneySymbol />
+                  </span>
                   </div>
                 </div>
                 <div>

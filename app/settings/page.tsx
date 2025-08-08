@@ -343,6 +343,27 @@ export default function SettingsPage() {
                     Tip: A healthy allocation is typically 50% essentials, 30% fun, 20% savings
                   </p>
                 </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Auto calculate limits</Label>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={!!data.settings.autoCalcLimits}
+                        onCheckedChange={(checked) => updateSettings({ autoCalcLimits: checked })}
+                      />
+                      <span className="text-sm">Recalculate category limits when income or allocation changes</span>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Budget basis month</Label>
+                    <Input
+                      type="month"
+                      value={data.settings.budgetBasisMonth || new Date().toISOString().slice(0,7)}
+                      onChange={(e) => updateSettings({ budgetBasisMonth: e.target.value })}
+                    />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

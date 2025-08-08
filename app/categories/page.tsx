@@ -144,7 +144,7 @@ const CATEGORY_PRESETS = {
 export default function CategoriesPage() {
   const { data, addCategory, updateCategory, deleteCategory } = useFinance();
   const { toast } = useToast();
-  const [newCategory, setNewCategory] = useState({ name: '', limit: '' });
+  const [newCategory, setNewCategory] = useState({ name: '', limit: '', allocation: 'essentials' });
   const [editingCategory, setEditingCategory] = useState<ExpenseCategory | null>(null);
   const [selectedPreset, setSelectedPreset] = useState<string>('');
   const [isAddingPreset, setIsAddingPreset] = useState(false);
@@ -201,10 +201,11 @@ export default function CategoriesPage() {
       icon: '💰',
       color: 'blue',
       limit: suggestedLimit,
-      currency: data.settings.defaultCurrency
+      currency: data.settings.defaultCurrency,
+      allocation: newCategory.allocation as any
     });
     
-    setNewCategory({ name: '', limit: '' });
+    setNewCategory({ name: '', limit: '', allocation: 'essentials' });
     
     toast({
       title: 'Category added',
@@ -388,7 +389,8 @@ export default function CategoriesPage() {
       icon: '💰',
       color: preset.color,
       limit: categoryLimit,
-      currency: data.settings.defaultCurrency
+      currency: data.settings.defaultCurrency,
+      allocation: preset.allocation as any
     });
     
     toast({
@@ -445,7 +447,8 @@ export default function CategoriesPage() {
       icon: '💰',
       color: preset.color,
       limit: defaultLimit,
-      currency: data.settings.defaultCurrency
+      currency: data.settings.defaultCurrency,
+      allocation: preset.allocation as any
     });
 
     toast({
@@ -468,6 +471,8 @@ export default function CategoriesPage() {
       </MainLayout>
     );
   }
+
+  const isProMode = data.settings.mode === 'pro';
 
   return (
     <MainLayout>
@@ -536,7 +541,7 @@ export default function CategoriesPage() {
                 </div>
 
                 {/* Interactive Preview with Click to Select */}
-                {selectedPreset && (
+                {isProMode && selectedPreset && (
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -633,7 +638,7 @@ export default function CategoriesPage() {
             </Card>
 
             {/* Preset Categories Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${!isProMode ? 'pointer-events-none opacity-60' : ''}`}>
               {Object.entries(CATEGORY_PRESETS).map(([name, preset]) => (
                 <motion.div
                   key={name}
@@ -752,7 +757,7 @@ export default function CategoriesPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="flex-1">
+            <div className="flex-1">
                     <Label htmlFor="category-name">Category Name</Label>
                     <Input
                       id="category-name"
@@ -761,6 +766,19 @@ export default function CategoriesPage() {
                       onChange={(e) => setNewCategory(prev => ({ ...prev, name: e.target.value }))}
                     />
                   </div>
+            <div className="sm:w-44">
+              <Label>Allocation</Label>
+              <Select value={newCategory.allocation} onValueChange={(value) => setNewCategory(prev => ({...prev, allocation: value}))}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="essentials">Essentials</SelectItem>
+                  <SelectItem value="investments">Investments</SelectItem>
+                  <SelectItem value="fun">Fun</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
                   <div className="sm:w-32">
                     <Label htmlFor="category-limit">Monthly Limit</Label>
                     <Input
@@ -938,6 +956,19 @@ export default function CategoriesPage() {
                                       >
                                         Cancel
                                       </Button>
+                                      <Select
+                                        value={editingCategory.allocation || 'essentials'}
+                                        onValueChange={(value) => setEditingCategory(prev => prev ? { ...prev, allocation: value as any } : null)}
+                                      >
+                                        <SelectTrigger className="w-40">
+                                          <SelectValue placeholder="Allocation" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="essentials">Essentials</SelectItem>
+                                          <SelectItem value="investments">Investments</SelectItem>
+                                          <SelectItem value="fun">Fun</SelectItem>
+                                        </SelectContent>
+                                      </Select>
                                       <Button
                                         onClick={() => handleEditCategory(editingCategory)}
                                       >

@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
+import { ClientRecalcWatcher } from "@/components/shared/recalc-watcher";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,6 +36,7 @@ export default function RootLayout({
         >
           {children}
           <Toaster />
+          <ClientRecalcWatcher />
         </ThemeProvider>
       </body>
     </html>

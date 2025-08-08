@@ -8,13 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { PieChart, Edit3, Save, X, AlertTriangle, CheckCircle } from 'lucide-react';
+import { PieChart, Edit3, Save, X, AlertTriangle, CheckCircle, RefreshCcw } from 'lucide-react';
 import { useFinance } from '@/hooks/use-finance';
 import { useToast } from '@/hooks/use-toast';
 import { formatCurrency, calculateCategorySpending, calculateBudgetUtilization, filterByDateRange } from '@/lib/utils';
 
 export function CategoryLimitsCard() {
-  const { data, currencyRates, updateCategory } = useFinance();
+  const { data, currencyRates, updateCategory, recalcCategoryLimits } = useFinance();
   const { toast } = useToast();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
@@ -64,12 +64,17 @@ export function CategoryLimitsCard() {
     setEditValue('');
   };
 
+  const recalcLimits = () => { recalcCategoryLimits(); };
+
   return (
     <Card className="h-full">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <PieChart className="h-5 w-5" />
           <span>Category Limits</span>
+          <Button size="sm" variant="outline" className="ml-auto" onClick={recalcLimits}>
+            <RefreshCcw className="h-3 w-3 mr-1" /> Recalculate
+          </Button>
         </CardTitle>
       </CardHeader>
       <CardContent>

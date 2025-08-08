@@ -26,7 +26,6 @@ import {
   Gamepad2,
   Settings,
   RotateCcw,
-  DollarSign,
   Clock,
   Plus,
   Star,
@@ -35,6 +34,7 @@ import {
   Plane,
   Music
 } from 'lucide-react';
+import { MoneySymbol } from '@/components/ui/money-symbol';
 
 interface QuickAction {
   id: string;
@@ -76,7 +76,7 @@ const ICON_OPTIONS = {
   briefcase: Briefcase,
   plane: Plane,
   music: Music,
-  dollar: DollarSign
+  dollar: Coffee
 };
 
 // Color options for custom actions
@@ -182,8 +182,16 @@ const DEFAULT_QUICK_ACTIONS: QuickAction[] = [
   }
 ];
 
+function coerceIcon(value: unknown): React.ComponentType<{ className?: string }> {
+  if (typeof value === 'function') return value as React.ComponentType<{ className?: string }>;
+  if (typeof value === 'string') {
+    return ICON_OPTIONS[value as keyof typeof ICON_OPTIONS] || Coffee;
+  }
+  return Coffee;
+}
+
 export function SmartQuickActions() {
-  const { data, addExpense } = useFinance();
+  const { data, addExpense, deleteExpense } = useFinance();
   const { toast } = useToast();
   const [quickActions, setQuickActions] = useState<QuickAction[]>(DEFAULT_QUICK_ACTIONS);
   const [showAmountDialog, setShowAmountDialog] = useState<QuickAction | null>(null);
@@ -204,17 +212,18 @@ export function SmartQuickActions() {
     if (savedActions) {
       try {
         const parsed = JSON.parse(savedActions);
-        // Fix icon references for loaded custom actions
-        const fixedActions = parsed.map((action: any) => {
-          if (action.isCustom && typeof action.icon === 'string') {
-            return {
-              ...action,
-              icon: ICON_OPTIONS[action.icon as keyof typeof ICON_OPTIONS] || Coffee
-            };
-          }
-          return action;
-        });
+        // Convert any serialized icon keys back to components for ALL actions
+        const fixedActions = parsed.map((action: any) => ({
+          ...action,
+          icon: coerceIcon(action.icon),
+        })) as QuickAction[];
         setQuickActions(fixedActions);
+        // Write back a sanitized, serializable version to prevent future issues
+        const serializable = fixedActions.map((a) => {
+          const iconKey = Object.entries(ICON_OPTIONS).find(([_k, c]) => c === a.icon)?.[0] || 'coffee';
+          return { ...a, icon: iconKey };
+        });
+        localStorage.setItem('smart_quick_actions', JSON.stringify(serializable));
       } catch (error) {
         console.error('Failed to load quick actions:', error);
         setQuickActions(DEFAULT_QUICK_ACTIONS);
@@ -225,14 +234,11 @@ export function SmartQuickActions() {
   // Save quick actions
   const saveQuickActions = (actions: QuickAction[]) => {
     setQuickActions(actions);
-    // Serialize actions with icon names instead of React components
-    const serializable = actions.map(action => {
-      if (action.isCustom) {
-        // Find the icon key name
-        const iconKey = Object.entries(ICON_OPTIONS).find(([_, component]) => component === action.icon)?.[0] || 'coffee';
-        return { ...action, icon: iconKey };
-      }
-      return action;
+    // Serialize actions with icon names for ALL actions to avoid storing functions
+    const serializable = actions.map((action) => {
+      const iconKey =
+        Object.entries(ICON_OPTIONS).find(([_key, component]) => component === action.icon)?.[0] || 'coffee';
+      return { ...action, icon: iconKey };
     });
     localStorage.setItem('smart_quick_actions', JSON.stringify(serializable));
   };
@@ -288,7 +294,7 @@ export function SmartQuickActions() {
     if (!data) return;
 
     try {
-      addExpense({
+      const createdId = addExpense({
         amount,
         currency: data.settings.defaultCurrency,
         categoryId,
@@ -307,10 +313,10 @@ export function SmartQuickActions() {
       toast({
         title: `✅ ${action.name} added`,
         description: `${formatCurrency(amount, data.settings.defaultCurrency, [])} recorded`,
+        action: (
+          <Button onClick={() => createdId && deleteExpense(createdId)}>Undo</Button>
+        ),
       });
-
-      // Auto refresh
-      setTimeout(() => window.location.reload(), 1200);
     } catch (error) {
       toast({
         title: 'Error',
@@ -428,7 +434,7 @@ export function SmartQuickActions() {
             {quickActions
               .sort((a, b) => b.frequency - a.frequency)
               .map((action, index) => {
-                const Icon = action.icon;
+                const Icon = coerceIcon(action.icon);
                 const hasLastAmount = action.lastAmount && action.lastAmount > 0;
                 
                 return (
@@ -530,11 +536,12 @@ export function SmartQuickActions() {
       {/* Amount Input Dialog */}
       <Dialog open={!!showAmountDialog} onOpenChange={() => setShowAmountDialog(null)}>
         <DialogContent>
-          <DialogHeader>
+            <DialogHeader>
             <DialogTitle className="flex items-center space-x-2">
-              {showAmountDialog && (
-                <showAmountDialog.icon className="h-5 w-5" />
-              )}
+              {showAmountDialog && (() => {
+                const DialogIcon = coerceIcon(showAmountDialog.icon);
+                return <DialogIcon className="h-5 w-5" />;
+              })()}
               <span>{showAmountDialog?.name}</span>
             </DialogTitle>
             <DialogDescription>
@@ -557,7 +564,9 @@ export function SmartQuickActions() {
                   }
                 }}
               />
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <MoneySymbol />
+              </span>
             </div>
             <div className="flex justify-end space-x-2">
               <Button variant="outline" onClick={() => setShowAmountDialog(null)}>
@@ -616,7 +625,9 @@ export function SmartQuickActions() {
                   onChange={(e) => setCustomForm({...customForm, defaultAmount: e.target.value})}
                   className="pl-8"
                 />
-                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  <MoneySymbol />
+                </span>
               </div>
             </div>
 
