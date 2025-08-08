@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { OnboardingProvider } from "@/components/shared/onboarding/OnboardingProvider";
 import { ClientRecalcWatcher } from "@/components/shared/recalc-watcher";
 import { I18nProvider } from "@/components/i18n/i18n-provider";
+import { GlobalAutoTranslate } from "@/components/i18n/auto-translate";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -41,6 +42,7 @@ export default function RootLayout({
               {children}
               <Toaster />
               <ClientRecalcWatcher />
+              <GlobalAutoTranslate />
             </OnboardingProvider>
           </I18nProvider>
         </ThemeProvider>

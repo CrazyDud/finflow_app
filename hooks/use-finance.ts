@@ -11,6 +11,7 @@ export function useFinance() {
   const [data, setData] = useState<FinanceData | null>(null);
   const [currencyRates, setCurrencyRates] = useState<CurrencyRate[]>(SUPPORTED_CURRENCIES);
   const [loading, setLoading] = useState(true);
+  const DATA_UPDATED_EVENT = 'finance:dataUpdated';
 
   // Load initial data
   useEffect(() => {
@@ -30,10 +31,44 @@ export function useFinance() {
     loadData();
   }, []);
 
+  // Listen for updates saved from any instance of this hook and refresh local state
+  useEffect(() => {
+    const handler = (ev: Event) => {
+      try {
+        const custom = ev as CustomEvent<FinanceData>;
+        if (custom.detail) {
+          setData(custom.detail);
+          return;
+        }
+      } catch (_e) {}
+      // Fallback: read from storage if detail missing
+      try {
+        setData(financeStorage.getData());
+      } catch (_e) {}
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener(DATA_UPDATED_EVENT, handler as EventListener);
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener(DATA_UPDATED_EVENT, handler as EventListener);
+      }
+    };
+  }, []);
+
   // Save data helper
   const saveData = useCallback((newData: FinanceData) => {
     setData(newData);
     financeStorage.saveData(newData);
+    // Broadcast to all hook consumers so dashboard/stat cards refresh instantly
+    try {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent<FinanceData>(DATA_UPDATED_EVENT, { detail: newData })
+        );
+      }
+    } catch (_e) {}
   }, []);
 
   // Income operations
