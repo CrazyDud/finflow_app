@@ -17,7 +17,8 @@ export function formatCurrency(amount: number, currency: string = 'EUR', rates: 
     maximumFractionDigits: 2
   });
   
-  return `${symbol}${formatter.format(Math.abs(amount))}`;
+  const formatted = formatter.format(Math.abs(amount));
+  return amount < 0 ? `-${symbol}${formatted}` : `${symbol}${formatted}`;
 }
 
 // Convert amount between currencies

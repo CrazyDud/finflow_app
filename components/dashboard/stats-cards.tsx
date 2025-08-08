@@ -138,11 +138,16 @@ export function StatsCards() {
         const Icon = stat.icon;
         const isPositive = stat.trend === 'up';
         const TrendIcon = isPositive ? TrendingUp : TrendingDown;
+        const isCurrentBalance = stat.title === 'Current Balance';
+        const isNegativeBalance = isCurrentBalance && (animatedValues.balance ?? stats.currentBalance) < 0;
+        const cardWarningClasses = isNegativeBalance
+          ? 'border-red-300 dark:border-red-800 bg-red-50/70 dark:bg-red-950/30'
+          : '';
         
         return (
           <Card 
             key={`${stat.title}-${lastUpdate}`}
-            className="card-hover transition-all duration-300 hover:shadow-lg hover:scale-105"
+            className={`card-hover transition-all duration-300 hover:shadow-lg hover:scale-105 ${cardWarningClasses}`}
             style={{ animationDelay: `${index * 100}ms` }}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
