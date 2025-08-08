@@ -14,7 +14,7 @@ const nextConfig = {
       // Allow Google Translate and eval required by it
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://translate.google.com https://translate.googleapis.com https://*.google.com https://*.gstatic.com",
       // Inline styles are injected by the widget
-      "style-src 'self' 'unsafe-inline' https://translate.googleapis.com https://fonts.googleapis.com",
+      "style-src 'self' 'unsafe-inline' https://translate.googleapis.com https://fonts.googleapis.com https://www.gstatic.com https://*.gstatic.com",
       // Images and data URIs
       "img-src 'self' data: https://translate.google.com https://translate.googleapis.com https://*.gstatic.com",
       // Fonts
