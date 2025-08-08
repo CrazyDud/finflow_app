@@ -26,6 +26,8 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
+import { useI18n } from '@/components/i18n/i18n-provider';
+import { LanguageSelector } from '@/components/i18n/language-selector';
 
 interface DashboardCard {
   id: string;
@@ -81,6 +83,7 @@ function buildDefaultCards(): DashboardCard[] {
 export function Dashboard() {
   const { data } = useFinance();
   const { startIfFirstVisit } = useOnboarding();
+  const { t } = useI18n();
   const [isEditMode, setIsEditMode] = useState(false);
   const [cardOrder, setCardOrder] = useState<DashboardCard[]>([]);
   
@@ -186,11 +189,12 @@ export function Dashboard() {
       {/* Dashboard Controls */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Dashboard</h2>
-          <p className="text-muted-foreground">Your financial overview at a glance</p>
+          <h2 className="text-2xl font-bold">{t('dashboard.title')}</h2>
+          <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
         </div>
         
         <div className="flex items-center space-x-2">
+          <LanguageSelector />
           <Button
             variant={isEditMode ? "default" : "outline"}
             size="sm"

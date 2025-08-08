@@ -29,6 +29,8 @@ import {
 import { useTheme } from 'next-themes';
 import { useFinance } from '@/hooks/use-finance';
 import { formatCurrency } from '@/lib/utils';
+import { LanguageSelector } from '@/components/i18n/language-selector';
+import { useI18n } from '@/components/i18n/i18n-provider';
 
 interface NavbarProps {
   onOpenSettings?: () => void;
@@ -37,6 +39,7 @@ interface NavbarProps {
 export function Navbar({ onOpenSettings }: NavbarProps) {
   const { setTheme, theme } = useTheme();
   const { data, currencyRates, updateSettings, exportData, importData, clearAllData } = useFinance();
+  const { t } = useI18n();
 
   const handleModeToggle = () => {
     if (!data) return;
@@ -112,8 +115,8 @@ export function Navbar({ onOpenSettings }: NavbarProps) {
               <Wallet className="h-5 w-5 text-white" />
             </div>
             <div className="flex flex-col">
-              <h1 className="text-lg font-semibold leading-tight bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">FinFlow</h1>
-              <p className="text-xs text-muted-foreground">Smart Finance Manager</p>
+              <h1 className="text-lg font-semibold leading-tight bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">{t('app.name')}</h1>
+              <p className="text-xs text-muted-foreground">{t('app.tagline')}</p>
             </div>
           </div>
 
@@ -121,7 +124,7 @@ export function Navbar({ onOpenSettings }: NavbarProps) {
           {data && (
             <div className="hidden md:flex items-center space-x-2">
               <div className="text-right">
-                <p className="text-sm text-muted-foreground">Current Balance</p>
+                <p className="text-sm text-muted-foreground">{t('nav.currentBalance')}</p>
                 <p className={`text-lg font-semibold animate-number ${
                   stats.totalBalance >= 0 ? 'text-green-600' : 'text-red-600'
                 }`}>
@@ -133,6 +136,8 @@ export function Navbar({ onOpenSettings }: NavbarProps) {
 
           {/* Controls */}
           <div className="flex items-center space-x-2">
+            {/* Language Selector */}
+            <LanguageSelector size="sm" />
             {/* Mode Toggle */}
             {data && (
               <Button
@@ -144,12 +149,12 @@ export function Navbar({ onOpenSettings }: NavbarProps) {
                 {data.settings.mode === 'simple' ? (
                   <>
                     <ToggleLeft className="h-4 w-4" />
-                    <span className="hidden sm:inline">Simple</span>
+                    <span className="hidden sm:inline">{t('nav.simple')}</span>
                   </>
                 ) : (
                   <>
                     <ToggleRight className="h-4 w-4" />
-                    <span className="hidden sm:inline">Pro</span>
+                    <span className="hidden sm:inline">{t('nav.pro')}</span>
                   </>
                 )}
                 <Badge variant="secondary" className="ml-1">
@@ -162,7 +167,7 @@ export function Navbar({ onOpenSettings }: NavbarProps) {
             <Button variant="ghost" size="sm" asChild>
               <Link href="/settings">
                 <Settings className="h-4 w-4" />
-                <span className="sr-only">Open settings menu</span>
+                <span className="sr-only">{t('nav.settings.sr')}</span>
               </Link>
             </Button>
 

@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { useFinance } from '@/hooks/use-finance';
+import { useI18n } from '@/components/i18n/i18n-provider';
+import { LanguageSelector } from '@/components/i18n/language-selector';
 import {
   Home,
   PieChart,
@@ -34,21 +36,22 @@ interface NavigationItem {
 }
 
 const navigation: NavigationItem[] = [
-  { name: 'Dashboard', href: '/', icon: Home },
-  { name: 'Transactions', href: '/transactions', icon: Receipt },
-  { name: 'Budget', href: '/budget', icon: Target },
-  { name: 'Categories', href: '/categories', icon: PieChart, proOnly: true },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3, proOnly: true },
-  { name: 'Calendar', href: '/calendar', icon: Calendar, proOnly: true },
-  { name: 'Reports', href: '/reports', icon: FileText, proOnly: true },
-  { name: 'Auto Payments', href: '/automatic-payments', icon: RefreshCcw, proOnly: true },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'nav.dashboard', href: '/', icon: Home },
+  { name: 'nav.transactions', href: '/transactions', icon: Receipt },
+  { name: 'nav.budget', href: '/budget', icon: Target },
+  { name: 'nav.categories', href: '/categories', icon: PieChart, proOnly: true },
+  { name: 'nav.analytics', href: '/analytics', icon: BarChart3, proOnly: true },
+  { name: 'nav.calendar', href: '/calendar', icon: Calendar, proOnly: true },
+  { name: 'nav.reports', href: '/reports', icon: FileText, proOnly: true },
+  { name: 'nav.automatic', href: '/automatic-payments', icon: RefreshCcw, proOnly: true },
+  { name: 'nav.settings', href: '/settings', icon: Settings },
 ];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { data, updateSettings } = useFinance();
+  const { t } = useI18n();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   const isProMode = data?.settings?.mode === 'pro';
@@ -58,8 +61,8 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
       updateSettings({
         mode: checked ? 'pro' : 'simple'
       });
-      // Send user to Dashboard when switching modes
-      router.push('/');
+      // Force a full refresh so all mode-gated UI updates immediately
+      window.location.reload();
     }
   };
 
@@ -88,7 +91,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">FF</span>
               </div>
-              <span className="font-semibold text-lg">FinFlow</span>
+              <span className="font-semibold text-lg">{t('app.name')}</span>
             </Link>
           </div>
 
@@ -101,10 +104,10 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                 </div>
                 <div>
                   <p className="text-sm font-medium">
-                    {isProMode ? 'Pro Mode' : 'Simple Mode'}
+                    {isProMode ? t('sidebar.mode.pro') : t('sidebar.mode.simple')}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {isProMode ? 'All features' : 'Basic features'}
+                    {isProMode ? t('sidebar.features.all') : t('sidebar.features.basic')}
                   </p>
                 </div>
               </div>
@@ -133,7 +136,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Icon className="mr-3 h-5 w-5" />
-                  <span>{item.name}</span>
+                  <span>{t(item.name)}</span>
                   {item.proOnly && isProMode && (
                     <Badge variant="secondary" className="ml-auto text-xs">
                       Pro
@@ -154,16 +157,19 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium">
-                    {isProMode ? 'Pro Features Active' : 'Simple Mode Active'}
+                    {isProMode ? t('sidebar.proActive') : t('sidebar.simpleActive')}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {isProMode ? 'All features unlocked' : 'Toggle above to enable Pro'}
+                    {isProMode ? t('sidebar.features.all') : t('sidebar.toggleHint')}
                   </p>
                 </div>
                 {isProMode && (
                   <Sparkles className="h-5 w-5 text-purple-600" />
                 )}
               </div>
+            </div>
+            <div className="mt-3">
+              <LanguageSelector size="default" />
             </div>
           </div>
         </div>

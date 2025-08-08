@@ -45,12 +45,15 @@ import { useTheme } from 'next-themes';
 import { toast } from 'react-hot-toast';
 import { formatCurrency } from '@/lib/utils';
 import { SUPPORTED_CURRENCIES } from '@/lib/storage';
+import { LanguageSelector } from '@/components/i18n/language-selector';
+import { useI18n } from '@/components/i18n/i18n-provider';
 
 export default function SettingsPage() {
   const { data, updateSettings, exportData, importData, clearAllData } = useFinance();
   const { theme, setTheme } = useTheme();
   const [importFile, setImportFile] = useState<File | null>(null);
   const [activeTab, setActiveTab] = useState('general');
+  const { t } = useI18n();
 
   if (!data) {
     return (
@@ -116,10 +119,8 @@ export default function SettingsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-            <p className="text-muted-foreground">
-              Customize your FinFlow experience and manage your data
-            </p>
+            <h1 className="text-3xl font-bold tracking-tight">{t('settings.title')}</h1>
+            <p className="text-muted-foreground">{t('settings.subtitle')}</p>
           </div>
           <Badge variant="secondary" className="px-3 py-1">
             <Settings className="h-3 w-3 mr-1" />
@@ -135,7 +136,7 @@ export default function SettingsPage() {
               onClick={() => setActiveTab('general')}
             >
               <User className="h-4 w-4" />
-              <span>General</span>
+              <span>{t('settings.tabs.general')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="appearance" 
@@ -143,7 +144,7 @@ export default function SettingsPage() {
               onClick={() => setActiveTab('appearance')}
             >
               <Palette className="h-4 w-4" />
-              <span>Appearance</span>
+              <span>{t('settings.tabs.appearance')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="budget" 
@@ -151,7 +152,7 @@ export default function SettingsPage() {
               onClick={() => setActiveTab('budget')}
             >
               <CreditCard className="h-4 w-4" />
-              <span>Budget</span>
+              <span>{t('settings.tabs.budget')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="data" 
@@ -159,7 +160,7 @@ export default function SettingsPage() {
               onClick={() => setActiveTab('data')}
             >
               <Database className="h-4 w-4" />
-              <span>Data</span>
+              <span>{t('settings.tabs.data')}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -169,6 +170,10 @@ export default function SettingsPage() {
                 <CardTitle>General Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label>{t('settings.language')}</Label>
+                  <LanguageSelector size="default" />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="currency">Default Currency</Label>
                   <Select
@@ -198,9 +203,10 @@ export default function SettingsPage() {
                     <div className="flex items-center space-x-2">
                       <Switch
                         checked={data.settings.mode === 'pro'}
-                        onCheckedChange={(checked) => 
-                          updateSettings({ mode: checked ? 'pro' : 'simple' })
-                        }
+                        onCheckedChange={(checked) => {
+                          updateSettings({ mode: checked ? 'pro' : 'simple' });
+                          window.location.reload();
+                        }}
                       />
                       <span className="text-sm">
                         {data.settings.mode === 'pro' ? 'Pro Mode' : 'Simple Mode'}

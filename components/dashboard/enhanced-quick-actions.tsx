@@ -88,6 +88,7 @@ export function EnhancedQuickActions() {
             onClick={() => {
               if (!createdId) return;
               deleteExpense(createdId);
+              window.location.reload();
             }}
           >
             Undo
@@ -145,6 +146,7 @@ export function EnhancedQuickActions() {
             onClick={() => {
               if (!createdId) return;
               deleteIncome(createdId);
+              window.location.reload();
             }}
           >
             Undo

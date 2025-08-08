@@ -48,6 +48,7 @@ export interface UserSettings {
   theme: 'light' | 'dark' | 'system';
   autoCalcLimits?: boolean;
   budgetBasisMonth?: string; // YYYY-MM
+  language?: 'en' | 'tr' | 'el' | 'es' | 'fr';
 }
 
 export interface FinanceData {

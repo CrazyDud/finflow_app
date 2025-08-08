@@ -30,7 +30,8 @@ export const DEFAULT_SETTINGS: UserSettings = {
   },
   customAllocation: false,
   notifications: true,
-  theme: 'system'
+  theme: 'system',
+  language: 'en'
 };
 
 // Supported currencies

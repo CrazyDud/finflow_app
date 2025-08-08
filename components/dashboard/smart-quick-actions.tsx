@@ -314,7 +314,7 @@ export function SmartQuickActions() {
         title: `✅ ${action.name} added`,
         description: `${formatCurrency(amount, data.settings.defaultCurrency, [])} recorded`,
         action: (
-          <Button onClick={() => createdId && deleteExpense(createdId)}>Undo</Button>
+          <Button onClick={() => { if (createdId) { deleteExpense(createdId); window.location.reload(); } }}>Undo</Button>
         ),
       });
     } catch (error) {

@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { OnboardingProvider } from "@/components/shared/onboarding/OnboardingProvider";
 import { ClientRecalcWatcher } from "@/components/shared/recalc-watcher";
+import { I18nProvider } from "@/components/i18n/i18n-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,11 +36,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <OnboardingProvider>
-            {children}
-            <Toaster />
-            <ClientRecalcWatcher />
-          </OnboardingProvider>
+          <I18nProvider>
+            <OnboardingProvider>
+              {children}
+              <Toaster />
+              <ClientRecalcWatcher />
+            </OnboardingProvider>
+          </I18nProvider>
         </ThemeProvider>
       </body>
     </html>
