@@ -55,7 +55,9 @@ export function BudgetPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >
-        <BudgetAllocationCard />
+        <div data-tour="budget.allocation">
+          <BudgetAllocationCard />
+        </div>
       </motion.div>
 
       {/* Category Limits and Insights */}
@@ -65,7 +67,9 @@ export function BudgetPage() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <CategoryLimitsCard />
+          <div data-tour="budget.limits">
+            <CategoryLimitsCard />
+          </div>
         </motion.div>
 
         {isProMode && (
@@ -74,7 +78,9 @@ export function BudgetPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <BudgetInsights />
+            <div data-tour="budget.insights">
+              <BudgetInsights />
+            </div>
           </motion.div>
         )}
       </div>

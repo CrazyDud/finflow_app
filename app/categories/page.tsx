@@ -1,3 +1,4 @@
+'use client';
 
 
 'use client';
@@ -50,6 +51,8 @@ import { formatCurrency } from '@/lib/utils';
 import { ExpenseCategory, FinanceData } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
+import { useOnboarding, type OnboardingStep } from '@/components/shared/onboarding/OnboardingProvider';
 
 // Enhanced category presets with realistic limits based on real-world data
 const CATEGORY_PRESETS = {
@@ -142,6 +145,14 @@ const CATEGORY_PRESETS = {
 };
 
 export default function CategoriesPage() {
+  const { startIfFirstVisit } = useOnboarding();
+  useEffect(() => {
+    const steps: OnboardingStep[] = [
+      { id: 'presets', target: '[data-tour="categories.presets"]', title: 'Smart Presets', body: 'Add realistic categories quickly.' },
+      { id: 'manage', target: '[data-tour="categories.manage"]', title: 'Manage Categories', body: 'Edit color, allocation, and limits.' },
+    ];
+    startIfFirstVisit('categories', steps);
+  }, [startIfFirstVisit]);
   const { data, addCategory, updateCategory, deleteCategory } = useFinance();
   const { toast } = useToast();
   const [newCategory, setNewCategory] = useState({ name: '', limit: '', allocation: 'essentials' });
@@ -506,7 +517,7 @@ export default function CategoriesPage() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="presets" className="space-y-4">
+          <TabsContent value="presets" className="space-y-4" data-tour="categories.presets">
             {/* Smart Preset Selection */}
             <Card className="border-0 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20">
               <CardHeader>
@@ -683,7 +694,7 @@ export default function CategoriesPage() {
 
           <TabsContent value="custom" className="space-y-4">
             {/* Custom Category Workflow */}
-            <Card>
+            <Card data-tour="categories.manage">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Wand2 className="h-5 w-5" />

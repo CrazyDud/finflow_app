@@ -9,6 +9,7 @@ import { SmartQuickActions } from './smart-quick-actions';
 import { EnhancedQuickActions } from './enhanced-quick-actions';
 import { SpendingChart } from './spending-chart';
 import { NewQuickAddCard } from './new-quick-add-card';
+import { useOnboarding, type OnboardingStep } from '@/components/shared/onboarding/OnboardingProvider';
 import { MonthlyOverview } from './monthly-overview';
 import { BudgetProgress } from './budget-progress';
 import { RecentTransactions } from './recent-transactions';
@@ -79,6 +80,7 @@ function buildDefaultCards(): DashboardCard[] {
 
 export function Dashboard() {
   const { data } = useFinance();
+  const { startIfFirstVisit } = useOnboarding();
   const [isEditMode, setIsEditMode] = useState(false);
   const [cardOrder, setCardOrder] = useState<DashboardCard[]>([]);
   
@@ -121,6 +123,16 @@ export function Dashboard() {
       setCardOrder(defaults);
     }
   }, []);
+
+  // Onboarding steps
+  useEffect(() => {
+    const steps: OnboardingStep[] = [
+      { id: 'quickAdd', target: '[data-tour="dashboard.quickAdd"]', title: 'Quick Add', body: 'Add income or expenses instantly.' },
+      { id: 'lightning', target: '[data-tour="dashboard.lightning"]', title: 'Lightning Quick Add', body: 'Fast entry with memory and undo.' },
+      { id: 'smart', target: '[data-tour="dashboard.smart"]', title: 'Smart Actions', body: 'One-tap common expenses with repeat.' },
+    ];
+    startIfFirstVisit('dashboard', steps);
+  }, [startIfFirstVisit]);
 
   const saveOrder = (newOrder: DashboardCard[]) => {
     setCardOrder(newOrder);
@@ -290,6 +302,7 @@ export function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
+              data-tour={cardConfig.id === 'quick-add' ? 'dashboard.quickAdd' : cardConfig.id === 'super-quick-actions' ? 'dashboard.lightning' : cardConfig.id === 'smart-quick-actions' ? 'dashboard.smart' : undefined}
             >
               <Component />
             </motion.div>

@@ -1,1 +1,9 @@
-{}
+{
+  "/page": "app/page.js",
+  "/settings/page": "app/settings/page.js",
+  "/transactions/page": "app/transactions/page.js",
+  "/budget/page": "app/budget/page.js",
+  "/categories/page": "app/categories/page.js",
+  "/analytics/page": "app/analytics/page.js",
+  "/calendar/page": "app/calendar/page.js"
+}

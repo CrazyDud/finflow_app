@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
+import { OnboardingProvider } from "@/components/shared/onboarding/OnboardingProvider";
 import { ClientRecalcWatcher } from "@/components/shared/recalc-watcher";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -34,9 +35,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster />
-          <ClientRecalcWatcher />
+          <OnboardingProvider>
+            {children}
+            <Toaster />
+            <ClientRecalcWatcher />
+          </OnboardingProvider>
         </ThemeProvider>
       </body>
     </html>

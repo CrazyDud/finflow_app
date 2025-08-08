@@ -1,10 +1,19 @@
 
-import React, { Suspense } from 'react';
+"use client";
+import React, { Suspense, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/main-layout';
 import { AddTransactionContent } from '@/components/add-transaction/add-transaction-content';
 import { Loader2 } from 'lucide-react';
+import { useOnboarding, type OnboardingStep } from '@/components/shared/onboarding/OnboardingProvider';
 
 export default function AddTransactionPage() {
+  const { startIfFirstVisit } = useOnboarding();
+  useEffect(() => {
+    const steps: OnboardingStep[] = [
+      { id: 'form', target: '[data-tour="add.form"]', title: 'Quick Add', body: 'Enter amount, category and description.' },
+    ];
+    startIfFirstVisit('add', steps);
+  }, [startIfFirstVisit]);
   return (
     <MainLayout>
       <Suspense 
@@ -15,7 +24,9 @@ export default function AddTransactionPage() {
           </div>
         }
       >
-        <AddTransactionContent />
+        <div data-tour="add.form">
+          <AddTransactionContent />
+        </div>
       </Suspense>
     </MainLayout>
   );

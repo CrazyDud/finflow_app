@@ -2,8 +2,9 @@
 
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/main-layout';
+import { useOnboarding, type OnboardingStep } from '@/components/shared/onboarding/OnboardingProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -49,6 +50,13 @@ ChartJS.register(
 
 export default function AnalyticsPage() {
   const { data, currencyRates } = useFinance();
+  const { startIfFirstVisit } = useOnboarding();
+  useEffect(() => {
+    const steps: OnboardingStep[] = [
+      { id: 'analytics', target: '[data-tour=\"analytics.main\"]', title: 'Analytics', body: 'Explore trends and breakdowns (Pro).' },
+    ];
+    startIfFirstVisit('analytics', steps);
+  }, [startIfFirstVisit]);
 
   const analytics = useMemo(() => {
     if (!data) return null;
@@ -195,7 +203,7 @@ export default function AnalyticsPage() {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
+      <div className="space-y-6" data-tour="analytics.main">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
