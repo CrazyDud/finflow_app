@@ -4,6 +4,13 @@ export type Language = 'en' | 'tr' | 'el' | 'es' | 'fr';
 
 export const translations: Record<Language, Record<string, string>> = {
   en: {
+    'common.customize': 'Customize',
+    'common.done': 'Done',
+    'dashboard.customize.title': 'Dashboard Customization',
+    'dashboard.customize.subtitle': 'Reorder cards and toggle visibility to personalize your dashboard',
+    'dashboard.customize.order': 'Order:',
+    'pro.wantMore': 'Want more powerful features?',
+    'pro.enable': 'Enable Pro Mode',
     // Common
     'common.proFeature': 'Pro Feature',
     'common.error': 'Error',
@@ -261,6 +268,13 @@ export const translations: Record<Language, Record<string, string>> = {
     'language.fr': 'French',
   },
   tr: {
+    'common.customize': 'Özelleştir',
+    'common.done': 'Bitti',
+    'dashboard.customize.title': 'Panel Özelleştirme',
+    'dashboard.customize.subtitle': 'Kartları yeniden sırala ve görünürlüğü değiştir',
+    'dashboard.customize.order': 'Sıra:',
+    'pro.wantMore': 'Daha güçlü özellikler ister misiniz?',
+    'pro.enable': 'Pro Modu Etkinleştir',
     'common.proFeature': 'Pro Özellik',
     'common.error': 'Hata',
     'errors.invalidAmount': 'Geçersiz tutar',

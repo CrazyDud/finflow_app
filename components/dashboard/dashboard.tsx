@@ -130,12 +130,12 @@ export function Dashboard() {
   // Onboarding steps
   useEffect(() => {
     const steps: OnboardingStep[] = [
-      { id: 'quickAdd', target: '[data-tour="dashboard.quickAdd"]', title: 'Quick Add', body: 'Add income or expenses instantly.' },
-      { id: 'lightning', target: '[data-tour="dashboard.lightning"]', title: 'Lightning Quick Add', body: 'Fast entry with memory and undo.' },
-      { id: 'smart', target: '[data-tour="dashboard.smart"]', title: 'Smart Actions', body: 'One-tap common expenses with repeat.' },
+      { id: 'quickAdd', target: '[data-tour="dashboard.quickAdd"]', title: t('quickAdd.title'), body: t('quick.lightningSubtitle') },
+      { id: 'lightning', target: '[data-tour="dashboard.lightning"]', title: t('quick.lightningTitle'), body: t('quick.lightningSubtitle') },
+      { id: 'smart', target: '[data-tour="dashboard.smart"]', title: t('quick.smartTitle'), body: t('quick.smartSubtitle') },
     ];
     startIfFirstVisit('dashboard', steps);
-  }, [startIfFirstVisit]);
+  }, [startIfFirstVisit, t]);
 
   const saveOrder = (newOrder: DashboardCard[]) => {
     setCardOrder(newOrder);
@@ -202,7 +202,7 @@ export function Dashboard() {
             className="flex items-center space-x-2"
           >
             {isEditMode ? <Check className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
-            <span>{isEditMode ? 'Done' : 'Customize'}</span>
+            <span>{isEditMode ? t('common.done') || 'Done' : t('common.customize') || 'Customize'}</span>
           </Button>
         </div>
       </div>
@@ -218,10 +218,10 @@ export function Dashboard() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2 text-lg">
                 <ArrowUpDown className="h-5 w-5" />
-                <span>Dashboard Customization</span>
+                <span>{t('dashboard.customize.title') || 'Dashboard Customization'}</span>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Reorder cards and toggle visibility to personalize your dashboard
+                {t('dashboard.customize.subtitle') || 'Reorder cards and toggle visibility to personalize your dashboard'}
               </p>
             </CardHeader>
             <CardContent>
@@ -249,7 +249,7 @@ export function Dashboard() {
                             )}
                           </div>
                           <span className="text-sm text-muted-foreground">
-                            Order: {index + 1}
+                            {t('dashboard.customize.order') || 'Order:'} {index + 1}
                           </span>
                         </div>
                       </div>
@@ -317,15 +317,15 @@ export function Dashboard() {
       {/* Pro Mode Upgrade Hint */}
       {!isProMode && (
         <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20">
-          <CardContent className="p-6 text-center">
+            <CardContent className="p-6 text-center">
             <h3 className="font-semibold text-purple-900 dark:text-purple-100 mb-2">
-              🚀 Want more powerful features?
+              🚀 {t('pro.wantMore') || 'Want more powerful features?'}
             </h3>
             <p className="text-purple-700 dark:text-purple-200 text-sm mb-4">
-              Upgrade to Pro mode for advanced analytics, unlimited categories, and detailed budget tracking
+              {t('pro.switchToPro')}
             </p>
             <Button variant="outline" className="border-purple-300 text-purple-700 hover:bg-purple-100">
-              Enable Pro Mode
+              {t('pro.enable') || 'Enable Pro Mode'}
             </Button>
           </CardContent>
         </Card>

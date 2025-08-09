@@ -64,7 +64,7 @@ export function MonthlyOverview() {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center space-x-2">
             <Calendar className="h-5 w-5" />
-            <span>Monthly Overview</span>
+            <span>{/* Could hook to i18n if needed */}Monthly Overview</span>
           </CardTitle>
           <Badge variant="secondary">6 Months</Badge>
         </div>
