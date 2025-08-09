@@ -9,10 +9,12 @@ const nextConfig = {
   },
   images: { unoptimized: true },
   async headers() {
+    const isDev = process.env.NODE_ENV !== 'production';
     const csp = [
       "default-src 'self'",
-      // Allow Next.js inline bootstrapping scripts (no eval)
-      "script-src 'self' 'unsafe-inline'",
+      isDev
+        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'" // needed for react-refresh/webpack in dev only
+        : "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data:",
       "font-src 'self' data: https://fonts.gstatic.com",
